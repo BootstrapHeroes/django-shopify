@@ -1,0 +1,47 @@
+import simplejson as json
+from django.test import TestCase
+
+from django.conf import settings
+from shopify_app.services import ShopifyService
+
+
+class ShopifyServiceTest(TestCase):
+
+    def test_get_all_customers(self):
+            
+        objs = ShopifyService().Customer.find()
+
+        self.assertEquals(type(objs), list)
+        self.assertEquals(len(objs), 1)
+
+        self.assertEquals(objs[0].attributes["first_name"], "test")
+        self.assertEquals(objs[0].attributes["last_name"], "test")
+        self.assertEquals(objs[0].attributes["email"], "test@test.com")
+
+    def test_create_product(self):
+
+        data = {
+            "title": "test",
+            "body_html": "<strong>test</strong>",
+            "vendor": "test",
+            "product_type": "test",
+            "tags": "test"
+        }        
+
+        product = ShopifyService().Product.create(data)
+
+        self.assertEquals(type(product.id), int)
+
+        for key, value in data.iteritems():
+            self.assertEquals(product.attributes[key], value)
+
+    def test_delete_products(self):
+
+        products = ShopifyService().Product.find()
+
+        for product in products:            
+            product.destroy()
+
+        products = ShopifyService().Product.find()
+
+        self.assertEquals(products, [])
