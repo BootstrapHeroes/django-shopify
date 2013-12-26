@@ -16,7 +16,7 @@ class BaseEntity(models.Model):
         abstract = True
 
 
-class Store(BaseEntity):
+class Shop(BaseEntity):
 
     shop_id = models.CharField(max_length=255, null=True, blank=True)
     token = models.CharField(max_length=255, null=True, blank=True)    
@@ -51,3 +51,19 @@ class Store(BaseEntity):
     county_taxes = models.CharField(max_length=255, null=True, blank=True)
     timezone = models.CharField(max_length=255, null=True, blank=True)
     zip = models.CharField(max_length=255, null=True, blank=True)
+
+    current_plan = models.OneToOneField("Plan")
+
+
+class Plan(BaseEntity):
+
+    shop_id = models.ForeignKey("Shop")
+
+    name = models.CharField(max_length=255, null=True, blank=True)
+    active = models.BooleanField(default=True)
+
+    billing_amount = models.DecimalField(max_digits=15, decimal_places=4)
+    billing_interval = models.CharField(max_length=2, null=True, blank=True)
+
+    trial_period_days = models.PositiveIntegerField(null=True, blank=True)
+    planned_charge_date = models.DateTimeField(null=True, blank=True)
