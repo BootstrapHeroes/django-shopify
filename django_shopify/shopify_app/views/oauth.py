@@ -5,22 +5,24 @@ from django.template import RequestContext, Context
 from django.core.urlresolvers import reverse
 import shopify
 
-"""
-Base class of Aouth Flow Views. Provides common methods
-"""
-class BaseOauthView(BaseView):
 
+class BaseOauthView(BaseView):
     """
-        Return the return address stored on session or default
+        Base class of Aouth Flow Views. Provides common methods
     """
+    
     def _return_address(self, request):
+        """
+            Return the return address stored on session or default
+        """
         #FIXME Change store/preferences
         return request.session.pop('return_to', "/store/preferences/")
 
-"""
-Initial login action which ask user for their ${shop}.myshopify.com address and redirect user to shopify auth page
-"""
+
 class LoginView(BaseOauthView):
+    """
+        Initial login action which ask user for their ${shop}.myshopify.com address and redirect user to shopify auth page
+    """
 
     def get(self, *args, **kwargs):
 
@@ -31,10 +33,11 @@ class LoginView(BaseOauthView):
 
         return super(BaseOauthView, self).get(*args, **kwargs)
 
-"""
-Finalize login action which receives the request from shopify and login the user to our app.
-"""
+
 class FinalizeView(BaseOauthView):
+    """
+        Finalize login action which receives the request from shopify and login the user to our app.
+    """
 
     def get(self, *args, **kwargs):
 
