@@ -129,6 +129,8 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
 
     '{app_name}',
+
+    'shopify_app',
 )
 
 # A sample logging configuration. The only tangible logging

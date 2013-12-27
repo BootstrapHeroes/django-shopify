@@ -28,7 +28,8 @@ class LoginView(BaseOauthView):
 
         #If the ${shop}.myshopify.com address is already provided in the URL, just skip to authenticate
         if self.request.REQUEST.get('shop'):
-            permission_url = shopify.Session.create_permission_url(shop.strip(), settings.SHOPIFY_API_SCOPE)
+            shop = self.request.REQUEST.get('shop').strip()
+            permission_url = shopify.Session.create_permission_url(shop, settings.SHOPIFY_API_SCOPE)
             return redirect(permission_url)
 
         return super(BaseOauthView, self).get(*args, **kwargs)

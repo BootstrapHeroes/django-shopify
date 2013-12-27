@@ -12,6 +12,8 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     (r'^media/(?P<path>.*)$', 'django.views.static.serve', {{'document_root': MEDIA_ROOT, 'show_indexes': True}}),
 
+    url(r'^', include('shopify_app.urls'), name='root_path'),
+
 )
 
 UrlsManager(urlpatterns, {app_name}_root)
