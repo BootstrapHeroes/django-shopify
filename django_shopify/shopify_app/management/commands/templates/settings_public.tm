@@ -102,6 +102,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'shopify_app.middleware.LoginProtection',
 )
 
 ROOT_URLCONF = '{project_name}.urls'
@@ -163,8 +164,6 @@ LOGGING = {{
 }}
 
 #Shopify config vars. Docs at https://github.com/SocalProofit/django-shopify/wiki/Shopify-Service
-SHOPIFY_API_KEY = "Your shopify API key"
-SHOPIFY_API_SECRET = "Your shopify API secret"
-SHOPIFY_API_PASSWORD = "Your shopify API password"
-SHOPIFY_HOST = "Your shopify store main domain (*.myshopify.com)"
-SHOPIFY_API_SCOPE = ["Your shopify API scopes"]
+SHOPIFY_API_KEY = None #Your shopify API key
+SHOPIFY_API_SECRET = None #Your shopify API secret
+SHOPIFY_API_SCOPE = [] #Your shopify API scopes
