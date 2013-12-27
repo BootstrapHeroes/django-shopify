@@ -57,10 +57,7 @@ class Shop(BaseEntity):
     timezone = models.CharField(max_length=255, null=True, blank=True)
     zip = models.CharField(max_length=255, null=True, blank=True)
 
-    current_plan = models.OneToOneField("Plan", null=True, blank=True)
-
-
-class Plan(BaseEntity):
+class PlanConfig(BaseEntity):
 
     BILLING_INTERVAL = (
         ('D', 'Daily'),
@@ -72,8 +69,6 @@ class Plan(BaseEntity):
         ('I', 'Interval'),
     )
 
-    shop_id = models.ForeignKey("Shop")
-
     name = models.CharField(max_length=255, null=True, blank=True)
     active = models.BooleanField(default=True)
 
@@ -82,11 +77,14 @@ class Plan(BaseEntity):
     billing_type = models.CharField(max_length=2, null=True, blank=True, choices=BILLING_TYPE)
 
     trial_period_days = models.PositiveIntegerField(null=True, blank=True)
-    planned_charge_date = models.DateTimeField(null=True, blank=True)
 
+class Plan(PlanConfig):
+
+    shop_id = models.ForeignKey("Shop")
+    planned_charge_date = models.DateTimeField(null=True, blank=True)
 
 class Config(BaseEntity):
 
     enable_billing = models.BooleanField(default=False)
         
-    plan = models.OneToOneField("Plan", null=True, blank=True)
+    plan_config = models.OneToOneField("PlanConfig", null=True, blank=True)
