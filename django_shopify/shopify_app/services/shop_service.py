@@ -6,6 +6,7 @@ from shopify_app.utils.python import normalize_url
 
 from shopify_service import ShopifyService
 from config_service import ConfigService
+from plan_service import PlanService
 
 
 class ShopService(BaseService):
@@ -61,14 +62,14 @@ class ShopService(BaseService):
 
         config = ConfigService().get_config()
 
-        plan = config.plan
-        if plan is None:
+        plan_config = config.plan_config
+        if plan_config is None:
             return False
 
         data = {
-            "name": plan.name,
-            "price": plan.billing_amount,
-            "trial_days": plan.trial_period_days,
+            "name": plan_config.name,
+            "price": plan_config.billing_amount,
+            "trial_days": plan_config.trial_period_days,
             "return_url": "%s%s" % (settings.HOST, reverse("shopify_config.views.upgrade")),
         }
 
@@ -78,7 +79,10 @@ class ShopService(BaseService):
         response = ShopifyService().RecurringApplicationCharge.create(data)
         response_data = response.to_dict()
 
-        shop.plan = config.plan
-        shop.save()
+        plan = PlanService().new(shop=shop)
+        for field in plan_config.fields():
+            setattr(plan, field, getattr(plan_config, field, ""))
+
+        plan.save()
 
         return response_data["confirmation_url"]

@@ -6,14 +6,6 @@ class ConfigService(BaseService):
 
     entity = Config
 
-    def __new__(cls, *args, **kwargs):
-        """ 
-            Singleton class
-        """
-        if not hasattr(cls, "_instance"):
-            cls._instance = super(ConfigService, cls).__new__(cls, *args, **kwargs)
-        return cls._instance
-
     def get_config(self):
         """
             Gets the config object.
