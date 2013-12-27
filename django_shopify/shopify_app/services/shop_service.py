@@ -22,14 +22,17 @@ class ShopService(BaseService):
 
         self.before_install(request)
 
-        shop = ShopifyService().Shop.current()
+        token = request.session.get('shopify', {}).get("access_token")
+        domain = request.session.get('shopify', {}).get("shop_url")
+        shop = ShopifyService(token=token, domain=domain).Shop.current()
         shop_model, created = self.get_or_create(shop_id=shop.id)
 
         for field in shop_model.fields():
-            setattr(shop_model, field, shop.attributes.get(field))
+            #FIXME!!!!
+            if field not in ["id", "created_at", "updated_at", "shop_id", "token"]:
+                setattr(shop_model, field, shop.attributes.get(field))
 
-        shop_model.token = request.session.get('shopify', {}).get("access_token")
-        shop_model.shop_id = shop.id
+        shop_model.token = token
         shop_model.save()
 
         self.post_install(request)

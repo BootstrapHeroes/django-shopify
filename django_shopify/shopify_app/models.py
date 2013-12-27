@@ -23,7 +23,7 @@ class BaseEntity(models.Model):
 
 class Shop(BaseEntity):
 
-    shop_id = models.CharField(max_length=255, null=True, blank=True)
+    shop_id = models.CharField(max_length=255, null=False, blank=False, unique=True)
     token = models.CharField(max_length=255, null=True, blank=True)
 
     address1 = models.CharField(max_length=255, null=True, blank=True)
