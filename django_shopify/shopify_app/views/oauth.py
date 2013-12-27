@@ -1,5 +1,5 @@
 from base import BaseView
-from settings import HOST, SHOPIFY_API_SCOPE
+from django.conf import settings
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext, Context
 from django.core.urlresolvers import reverse
@@ -28,7 +28,7 @@ class LoginView(BaseOauthView):
 
         #If the ${shop}.myshopify.com address is already provided in the URL, just skip to authenticate
         if self.request.REQUEST.get('shop'):
-            permission_url = shopify.Session.create_permission_url(shop.strip(), SHOPIFY_API_SCOPE)
+            permission_url = shopify.Session.create_permission_url(shop.strip(), settings.SHOPIFY_API_SCOPE)
             return redirect(permission_url)
 
         return super(BaseOauthView, self).get(*args, **kwargs)

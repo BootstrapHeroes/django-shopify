@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.db import models
 
 
@@ -8,9 +9,13 @@ class BaseEntity(models.Model):
 
     def __init__(self, *args, **kwargs):
 
-        now = datetime.datetime.now()
+        now = datetime.now()
         kwargs.update(created_at=now, updated_at=now)
         models.Model.__init__(self, *args, **kwargs)
+
+    def fields(self):
+
+        return [key for key in self.__dict__.keys() if not key.startswith("_")]
 
     class Meta:
         abstract = True
@@ -19,7 +24,7 @@ class BaseEntity(models.Model):
 class Shop(BaseEntity):
 
     shop_id = models.CharField(max_length=255, null=True, blank=True)
-    token = models.CharField(max_length=255, null=True, blank=True)    
+    token = models.CharField(max_length=255, null=True, blank=True)
 
     address1 = models.CharField(max_length=255, null=True, blank=True)
     city = models.CharField(max_length=255, null=True, blank=True)
