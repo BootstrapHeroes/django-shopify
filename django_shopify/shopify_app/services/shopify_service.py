@@ -6,14 +6,6 @@ from shopify_app.utils.python import normalize_url
 
 class ShopifyService(object):
 
-    def __new__(cls, *args, **kwargs):
-        """ 
-            Singleton class
-        """
-        if not hasattr(cls, "_instance"):
-            cls._instance = super(ShopifyService, cls).__new__(cls, *args, **kwargs)
-        return cls._instance
-
     def __init__(self):
         """
             Initializes the shopify api client with the keys stored in settings.py.
