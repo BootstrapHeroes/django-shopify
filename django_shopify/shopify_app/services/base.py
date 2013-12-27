@@ -1,15 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import get_object_or_404
 
-from django.db.models import Q
-from django.template.loader import render_to_string
-from django.http import HttpResponse
-from django.utils.cache import add_never_cache_headers
-from django.utils import simplejson
-
-from social_proofit.utils import renderer
-from social_proofit.utils.python import convert_to_bool
-from social_proofit.services.cache import cache
+from shopify_app.utils.render import render, render_string
+from shopify_app.utils.python import convert_to_bool
 
 
 class BaseService(object):
@@ -165,11 +158,11 @@ class BaseService(object):
 
     def render(self, template, context):
 
-        return renderer.render(template, context)
+        return render(template, context)
 
     def render_string(self, string, context):
 
-        return renderer.render_string(string, context)
+        return render_string(string, context)
 
     def get_object_or_404(self, **kwargs):
 
@@ -247,8 +240,3 @@ class BaseService(object):
         for param in params:
             if not data.get(param):
                 data[param] = None
-
-    def get_from_cache(self, id=0):
-
-        key = "%s-%s" % (self.entity.__name__, id)
-        return cache.get_and_set(key, lambda: self.select_related().get(id=id))
