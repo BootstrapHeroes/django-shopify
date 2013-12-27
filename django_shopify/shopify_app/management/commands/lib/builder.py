@@ -25,7 +25,7 @@ class ProjectBuilder(object):
         self.args = args
         self.project_name = args[0] if self.args else None
         self.app_name = "{0}_app".format(self.project_name)
-        self.type = args[1] if self.args else False
+        self.type = args[1] if len(self.args) > 1 else False
         self.public_app = self.type == "public"
 
     def build(self):

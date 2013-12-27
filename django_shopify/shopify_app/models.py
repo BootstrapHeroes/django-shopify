@@ -90,4 +90,4 @@ class Config(BaseEntity):
     billing_type = models.CharField(max_length=2, null=True, blank=True, choices=BILLING_TYPE)
     free_trial_enabled = models.BooleanField(default=False)
     free_trial_period = models.PositiveIntegerField(default=0)
-    amount = models.DecimalField(max_digits=15, decimal_places=4)
+    amount = models.DecimalField(max_digits=15, decimal_places=4, null=True, blank=True)

@@ -18,14 +18,16 @@ class ConfigService(BaseService):
         """
             Gets the config object.
             Created a new default config if it doesn't exists.
-        """
+        """ 
 
         #lazy attribute
-        if not hasattr(self, "config"):            
+        if not "config" in self.__dict__:
 
             self.config = self.get_one(id=1)
 
             if self.config is None:
-                self.config = self.new().save()
+
+                self.config = self.new()
+                self.config.save()
 
         return self.config
