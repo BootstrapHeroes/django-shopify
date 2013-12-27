@@ -46,7 +46,7 @@ class ShopifyService(object):
 
     def __init__(self, token=None, domain=None, shop=None):
 
-        if settings.PUBLIC_APP:
+        if getattr(settings, "PUBLIC_APP", False):
             
             if shop:
                 token = shop.token

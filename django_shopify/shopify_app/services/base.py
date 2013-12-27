@@ -17,7 +17,7 @@ class BaseService(object):
             Singleton class
         """
         if not hasattr(cls, "_instance"):
-            cls._instance = super(Base, cls).__new__(cls, *args, **kwargs)
+            cls._instance = super(BaseService, cls).__new__(cls, *args, **kwargs)
         return cls._instance
 
     def __getattr__(self, name):
