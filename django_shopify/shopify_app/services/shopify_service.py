@@ -6,13 +6,11 @@ from shopify_app.utils.python import normalize_url
 
 class ShopifyService(object):
 
-    _instance = None
-
     def __new__(cls, *args, **kwargs):
         """ 
             Singleton class
         """
-        if not cls._instance:
+        if not hasattr(cls, "_instance"):
             cls._instance = super(ShopifyService, cls).__new__(cls, *args, **kwargs)
         return cls._instance
 

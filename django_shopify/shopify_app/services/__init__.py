@@ -1,2 +1,3 @@
 from shopify_service import ShopifyService
 from shop_service import ShopService
+from config_service import ConfigService
