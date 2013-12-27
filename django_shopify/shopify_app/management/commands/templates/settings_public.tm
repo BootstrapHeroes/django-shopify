@@ -163,6 +163,8 @@ LOGGING = {{
     }}
 }}
 
+PUBLIC_APP = True
+
 #Shopify config vars. Docs at https://github.com/SocalProofit/django-shopify/wiki/Shopify-Service
 SHOPIFY_API_KEY = None #Your shopify API key
 SHOPIFY_API_SECRET = None #Your shopify API secret
