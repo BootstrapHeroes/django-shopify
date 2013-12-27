@@ -1,7 +1,11 @@
 from base import BaseService
-from shopify_app.models import Shop
+from django.conf import settings
 
+from shopify_app.models import Shop
 from shopify_app.utils.python import normalize_url
+
+from shopify_service import ShopifyService
+from config_service import ConfigService
 
 
 class ShopService(BaseService):
@@ -18,7 +22,7 @@ class ShopService(BaseService):
 
         self.before_install(request)
 
-        shop = shopify.Shop.current()
+        shop = ShopifyService().Shop.current()
         shop_model, created = self.get_or_create(shop_id=shop.id)
 
         for field in shop_model.fields():
@@ -29,6 +33,8 @@ class ShopService(BaseService):
         shop_model.save()
 
         self.post_install(request)
+
+        return shop_model
 
     def before_install(self, request):
         """
@@ -43,3 +49,33 @@ class ShopService(BaseService):
         """
 
         pass
+
+    def create_plan(self, shop):
+        """
+            Creates the shop plan and returns the confirmation url where
+            the user should accept the billing.
+        """
+
+        config = ConfigService().get_config()
+
+        plan = config.plan
+        if plan is None:
+            return False
+
+        data = {
+            "name": plan.name,
+            "price": plan.billing_amount,
+            "trial_days": plan.trial_period_days,
+            "return_url": "%s%s" % (settings.HOST, reverse("shopify_config.views.upgrade")),
+        }
+
+        if settings.TEST:
+            data["test"] = True
+        
+        response = ShopifyService().RecurringApplicationCharge.create(data)
+        response_data = response.to_dict()
+
+        shop.plan = config.plan
+        shop.save()
+
+        return response_data["confirmation_url"]
