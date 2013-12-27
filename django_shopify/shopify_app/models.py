@@ -57,6 +57,15 @@ class Shop(BaseEntity):
     timezone = models.CharField(max_length=255, null=True, blank=True)
     zip = models.CharField(max_length=255, null=True, blank=True)
 
+    def current_plan(self):
+
+        plans = self.plan_set.order_by("-id")
+        if not plans:
+            return
+
+        return plans[0]
+
+
 class PlanConfig(BaseEntity):
 
     BILLING_INTERVAL = (
@@ -78,10 +87,12 @@ class PlanConfig(BaseEntity):
 
     trial_period_days = models.PositiveIntegerField(null=True, blank=True)
 
+
 class Plan(PlanConfig):
 
     shop_id = models.ForeignKey("Shop")
     planned_charge_date = models.DateTimeField(null=True, blank=True)
+
 
 class Config(BaseEntity):
 
