@@ -12,4 +12,4 @@ urlpatterns = patterns('',
     # url(r'^admin/', include(admin.site.urls)),
 )
 
-UrlsManager(urlpatterns, views_root, namespace="shopify")
+UrlsManager(urlpatterns, views_root)
