@@ -6,6 +6,7 @@ from shopify_app.utils.python import normalize_url
 
 from shopify_service import ShopifyService
 from config_service import ConfigService
+from plan_service import PlanService
 
 
 class ShopService(BaseService):
@@ -75,7 +76,7 @@ class ShopService(BaseService):
         response = ShopifyService().RecurringApplicationCharge.create(data)
         response_data = response.to_dict()
 
-        plan = Plan(shop=shop)
+        plan = PlanService().new(shop=shop)
         for field in plan_config.fields():
             setattr(plan, field, getattr(plan_config, field, ""))
 
