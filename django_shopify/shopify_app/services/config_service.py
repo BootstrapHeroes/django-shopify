@@ -26,10 +26,5 @@ class ConfigService(BaseService):
 
     def is_active_billing(self):
         config = self.get_config()
-
-        plan_config = config.plan_config
-        if plan_config is None or not plan_config.enable_billing:
-            return False
-
-        return True
+        return config and config.enable_billing
 
