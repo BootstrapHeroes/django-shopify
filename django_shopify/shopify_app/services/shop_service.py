@@ -62,7 +62,7 @@ class ShopService(BaseService):
         config = ConfigService().get_config()
 
         plan_config = config.plan_config
-        if plan_config is None:
+        if plan_config is None or not plan_config.enable_billing:
             return False
 
         data = {
@@ -79,7 +79,7 @@ class ShopService(BaseService):
         response_data = response.to_dict()
 
         plan = PlanService().new(shop=shop)
-        for field in plan_config.fields():
+        for field in plan_config.update_fields():
             setattr(plan, field, getattr(plan_config, field, ""))
 
         plan.save()

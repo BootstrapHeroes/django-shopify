@@ -4,6 +4,8 @@ from django.db import models
 
 class BaseEntity(models.Model):
 
+    NOT_IN_FIELDS = []
+
     created_at = models.DateTimeField(null=True, blank=True)
     updated_at = models.DateTimeField(null=True, blank=True)
 
@@ -16,6 +18,10 @@ class BaseEntity(models.Model):
     def fields(self):
 
         return [key for key in self.__dict__.keys() if not key.startswith("_")]
+
+    def update_fields(self):
+
+        return [field for field in self.fields() if field not in self.NOT_IN_FIELDS]
 
     class Meta:
         abstract = True
@@ -57,12 +63,7 @@ class Shop(BaseEntity):
     timezone = models.CharField(max_length=255, null=True, blank=True)
     zip = models.CharField(max_length=255, null=True, blank=True)
 
-    NOT_IN_FIELDS = ["id", "created_at", "updated_at", "shop_id", "token"]
-
-    def update_fields(self):
-
-        fields = self.fields()
-        return [field for field in fields if field not in self.NOT_IN_FIELDS]
+    NOT_IN_FIELDS = ["id", "created_at", "updated_at", "shop_id", "token"]    
 
     def current_plan(self):
 
@@ -93,6 +94,8 @@ class PlanConfig(BaseEntity):
     billing_type = models.CharField(max_length=2, null=True, blank=True, choices=BILLING_TYPE)
 
     trial_period_days = models.PositiveIntegerField(null=True, blank=True)
+
+    NOT_IN_FIELDS = ["id", "created_at", "updated_at"]
 
 
 class Plan(PlanConfig):

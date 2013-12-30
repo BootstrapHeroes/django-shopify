@@ -16,10 +16,16 @@ class PreferencesView(BaseView):
     """
         Main View to access the shop account
     """
+
+    service = ShopService()
     
     @shop_login_required    
     def get(self, *args, **kwargs):
 
-        shop = ShopService().install(self.request)
+        shop = self.service.install(self.request)
+        redirect_url = self.service.create_plan(shop)
         
-        return self.redirect("/")
+        if not redirect_url:
+            redirect_url = "/"
+
+        return self.redirect(redirect_url)
