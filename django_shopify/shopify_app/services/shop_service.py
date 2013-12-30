@@ -25,6 +25,7 @@ class ShopService(BaseService):
 
         token = request.session.get('shopify', {}).get("access_token")
         domain = request.session.get('shopify', {}).get("shop_url")
+        
         shop = ShopifyService(token=token, domain=domain).Shop.current()
         shop_model, created = self.get_or_create(shop_id=shop.id)
 
