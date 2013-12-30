@@ -25,7 +25,7 @@ class PreferencesView(BaseView):
         shop, redirect_url = self.service.install(self.request)
 
         if not redirect_url:
-            redirect_url = settings.OAUTH_REDIRECT_URL
+            redirect_url = getattr(settings, "OAUTH_REDIRECT_URL", "/")
 
         return self.redirect(redirect_url)
 
@@ -41,4 +41,4 @@ class BillingView(BaseView):
         charge_id = request.GET.get("charge_id")
         ShopService().upgrade_plan(charge_id)
 
-        return self.redirect(settings.BILLING_REDIRECT_URL)
+        return self.redirect(getattr(settings, "BILLING_REDIRECT_URL", "/"))
