@@ -1,0 +1,6 @@
+#!/usr/bin/env python
+
+import sys
+from shopify_app.management.commands.start_shopify_app import Command
+
+Command().do_run(*sys.argv[1:])

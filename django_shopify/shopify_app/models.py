@@ -57,6 +57,13 @@ class Shop(BaseEntity):
     timezone = models.CharField(max_length=255, null=True, blank=True)
     zip = models.CharField(max_length=255, null=True, blank=True)
 
+    NOT_IN_FIELDS = ["id", "created_at", "updated_at", "shop_id", "token"]
+
+    def update_fields(self):
+
+        fields = self.fields()
+        return [field for field in fields if field not in self.NOT_IN_FIELDS]
+
     def current_plan(self):
 
         plans = self.plan_set.order_by("-id")
