@@ -22,8 +22,8 @@ class PreferencesView(BaseView):
     @shop_login_required    
     def get(self, *args, **kwargs):
 
-        shop = self.service.install(self.request)
-        redirect_url = self.service.create_plan(shop)
+        self.service.install(self.request)
+        redirect_url = self.service.get_upgrade_plan_url()
 
         if not redirect_url:
             redirect_url = settings.OAUTH_REDIRECT_URL
@@ -38,5 +38,8 @@ class BillingView(BaseView):
 
     @shop_login_required    
     def get(self, *args, **kwargs):
+
+        charge_id = request.GET.get("charge_id")
+        ShopService().upgrade_plan(charge_id)
 
         return self.redirect(settings.BILLING_REDIRECT_URL)

@@ -53,7 +53,7 @@ class ShopService(BaseService):
 
         pass
 
-    def create_plan(self, shop):
+    def get_upgrade_plan_url(self):
         """
             Creates the shop plan and returns the confirmation url where
             the user should accept the billing.
@@ -78,10 +78,15 @@ class ShopService(BaseService):
         response = ShopifyService().RecurringApplicationCharge.create(data)
         response_data = response.to_dict()
 
-        plan = PlanService().new(shop=shop)
+        return response_data["confirmation_url"]
+
+    def upgrade_plan(self, charge_id):
+
+        shop = ShopifyService().Shop.current()
+        shop_model = self.get(shop_id=shop.id)
+
+        plan = PlanService().new(shop=shop_model)
         for field in plan_config.update_fields():
             setattr(plan, field, getattr(plan_config, field, ""))
 
         plan.save()
-
-        return response_data["confirmation_url"]
