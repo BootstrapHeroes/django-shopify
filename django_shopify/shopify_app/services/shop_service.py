@@ -44,9 +44,13 @@ class ShopService(BaseService):
         return shop_model, redirect_url
 
     def _check_active_plan(self, shop):
+
+        if not ConfigService().is_active_billing():
+            return True
+
         current_plan = shop.current_plan()
         if not current_plan:
-            return True
+            return False
         else:
             return ShopifyService().is_active_charge(current_plan.charge_id)
 
