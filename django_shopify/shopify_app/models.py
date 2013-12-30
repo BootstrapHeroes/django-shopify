@@ -23,7 +23,7 @@ class BaseEntity(models.Model):
 
 class Shop(BaseEntity):
 
-    shop_id = models.CharField(max_length=255, null=True, blank=True)
+    shop_id = models.CharField(max_length=255, null=False, blank=False, unique=True)
     token = models.CharField(max_length=255, null=True, blank=True)
 
     address1 = models.CharField(max_length=255, null=True, blank=True)
@@ -57,18 +57,52 @@ class Shop(BaseEntity):
     timezone = models.CharField(max_length=255, null=True, blank=True)
     zip = models.CharField(max_length=255, null=True, blank=True)
 
-    current_plan = models.OneToOneField("Plan")
+    NOT_IN_FIELDS = ["id", "created_at", "updated_at", "shop_id", "token"]
+
+    def update_fields(self):
+
+        fields = self.fields()
+        return [field for field in fields if field not in self.NOT_IN_FIELDS]
+
+    def current_plan(self):
+
+        plans = self.plan_set.order_by("-id")
+        if not plans:
+            return
+
+        return plans[0]
 
 
-class Plan(BaseEntity):
+class PlanConfig(BaseEntity):
 
-    shop_id = models.ForeignKey("Shop")
+    BILLING_INTERVAL = (
+        ('D', 'Daily'),
+        ('M', 'weekly'),
+    )
+
+    BILLING_TYPE = (
+        ('O', 'One Time'),
+        ('I', 'Interval'),
+    )
 
     name = models.CharField(max_length=255, null=True, blank=True)
     active = models.BooleanField(default=True)
 
     billing_amount = models.DecimalField(max_digits=15, decimal_places=4)
-    billing_interval = models.CharField(max_length=2, null=True, blank=True)
+    billing_interval = models.CharField(max_length=2, null=True, blank=True, choices=BILLING_INTERVAL)
+    billing_type = models.CharField(max_length=2, null=True, blank=True, choices=BILLING_TYPE)
 
     trial_period_days = models.PositiveIntegerField(null=True, blank=True)
+
+
+class Plan(PlanConfig):
+
+    shop_id = models.ForeignKey("Shop")
     planned_charge_date = models.DateTimeField(null=True, blank=True)
+
+
+class Config(BaseEntity):
+
+    enable_billing = models.BooleanField(default=False)
+        
+    plan_config = models.OneToOneField("PlanConfig", null=True, blank=True)

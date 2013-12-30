@@ -15,8 +15,7 @@ class BaseOauthView(BaseView):
         """
             Return the return address stored on session or default
         """
-        #FIXME Change store/preferences
-        return request.session.pop('return_to', "/store/preferences/")
+        return request.session.pop('return_to', "/shop")
 
 
 class LoginView(BaseOauthView):
@@ -28,7 +27,8 @@ class LoginView(BaseOauthView):
 
         #If the ${shop}.myshopify.com address is already provided in the URL, just skip to authenticate
         if self.request.REQUEST.get('shop'):
-            permission_url = shopify.Session.create_permission_url(shop.strip(), settings.SHOPIFY_API_SCOPE)
+            shop = self.request.REQUEST.get('shop').strip()
+            permission_url = shopify.Session.create_permission_url(shop, settings.SHOPIFY_API_SCOPE)
             return redirect(permission_url)
 
         return super(BaseOauthView, self).get(*args, **kwargs)
@@ -45,7 +45,7 @@ class FinalizeView(BaseOauthView):
 
         # Checking if the user has a previous valid session initialized, not need to initialize again
         if hasattr(self.request, 'session') and 'shopify' in self.request.session and self.request.session["shopify"]["shop_url"] == shop_url:
-            return redirect("/store/preferences")
+            return redirect("/shop")
 
         # Initializing shopify session
         try:
@@ -53,7 +53,7 @@ class FinalizeView(BaseOauthView):
             shopify_session.request_token(self.request.GET["code"])
         except:
             #Shopify session fails, redirect to login initial step
-            return redirect("%s?shop=%s"%('/oauth/login', shop_url))
+            return redirect("%s?shop=%s"%("/oauth/login", shop_url))
 
 
         # Store shopify sesssion data in our session

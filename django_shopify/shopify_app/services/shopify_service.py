@@ -6,23 +6,31 @@ from shopify_app.utils.python import normalize_url
 
 class ShopifyService(object):
 
-    _instance = None
-
     def __new__(cls, *args, **kwargs):
         """ 
             Singleton class
         """
-        if not cls._instance:
+        if not hasattr(cls, "_instance"):
             cls._instance = super(ShopifyService, cls).__new__(cls, *args, **kwargs)
         return cls._instance
 
-    def __init__(self):
+    def _init_public_app(self, token, domain):
+        """
+            Initializes the shopify api client with the key of the shop
+        """
+        try:
+            session = shopify.Session(domain)
+            session.token = token
+            return session
+        except AttributeError:
+            raise Exception("You have to specify the token and domain to init a public app")
+
+    def _init_private_app(self):
         """
             Initializes the shopify api client with the keys stored in settings.py.
             SHOPIFY_API_KEY, SHOPIFY_API_SECRET, SHOPIFY_API_PASSWORD, and SHOPIFY_HOST
             must be defined in that file.
         """
-
         try:
             api_key = settings.SHOPIFY_API_KEY
             api_secret = settings.SHOPIFY_API_SECRET
@@ -33,8 +41,21 @@ class ShopifyService(object):
 
         session = shopify.Session(normalize_url(api_host))
         session.token = api_password
-
         session.setup(api_key=api_key, secret=api_secret)
+        return session
+
+    def __init__(self, token=None, domain=None, shop=None):
+
+        if getattr(settings, "PUBLIC_APP", False):
+            
+            if shop:
+                token = shop.token
+                domain = shop.myshopify_domain
+
+            session = self._init_public_app(token, domain)
+
+        else:
+            session = self._init_private_app()
 
         shopify.ShopifyResource.activate_session(session)
         self.session = session

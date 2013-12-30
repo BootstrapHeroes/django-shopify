@@ -25,6 +25,8 @@ class ProjectBuilder(object):
         self.args = args
         self.project_name = args[0] if self.args else None
         self.app_name = "{0}_app".format(self.project_name)
+        self.type = args[1] if len(self.args) > 1 else False
+        self.public_app = self.type == "public"
 
     def build(self):
         """
@@ -52,6 +54,10 @@ class ProjectBuilder(object):
         self._create_dir("templates", "index")
         self._create_file(self._get_dir("templates", "index", "index.html"), render_template("index.html"))
 
+        if self.public_app:
+            self._create_dir("templates", "oauth")
+            self._create_file(self._get_dir("templates", "oauth", "login.html"), render_template("login.html"))
+
     def make_default_app(self):
         """
             Creates the django app, the views root folder and some example views.
@@ -76,15 +82,26 @@ class ProjectBuilder(object):
         chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
         secret_key = get_random_string(50, chars)
 
-        settings_file = render_template("settings", {"app_name": self.app_name, "project_name": self.project_name, "secret_key": secret_key })
+        if self.public_app:
+            template_name = "settings_public"
+        else:
+            template_name = "settings"
+
+        settings_file = render_template(template_name, {"app_name": self.app_name, "project_name": self.project_name, "secret_key": secret_key })
+
         self._create_file("settings.py", settings_file)
 
     def setup_urls(self):
         """
             Replaces the django default urls.py for a template we provide.
         """
-        
-        urls_file = render_template("urls", {"app_name": self.app_name })
+
+        if self.public_app:
+            template_name = "urls_public"
+        else:
+            template_name = "urls"
+
+        urls_file = render_template(template_name, {"app_name": self.app_name })
         self._create_file("urls.py", urls_file)
 
     def setup_media(self):
