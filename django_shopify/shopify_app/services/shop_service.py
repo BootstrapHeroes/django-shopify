@@ -85,7 +85,7 @@ class ShopService(BaseService):
             "name": plan_config.name if plan_config else "Default",
             "price": plan_config.billing_amount if plan_config else "10.0",
             "trial_days": plan_config.trial_period_days if plan_config else 15,
-            "return_url": "%s%s%s" % (getattr(settings, "HOST", "127.0.0.1:8000"), "/shop/billing/?shop_id=", shop.id),
+            "return_url": "%s%s%s" % (getattr(settings, "HOST", "127.0.0.1:8000"), "/shop/billing/?id=", shop.id),
         }
 
         if getattr(settings, "TEST", True):
@@ -96,8 +96,8 @@ class ShopService(BaseService):
 
         return response_data["confirmation_url"]
 
-    def upgrade_plan(self, shop_id, charge_id):
-        shop_model = self.get(id=shop_id)
+    def upgrade_plan(self, identifier, charge_id):
+        shop_model = self.get(id=identifier)
 
         plan = PlanService().new(shop=shop_model)
         for field in plan_config.update_fields():

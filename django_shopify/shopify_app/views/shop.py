@@ -38,8 +38,8 @@ class BillingView(BaseView):
     @shop_login_required    
     def get(self, *args, **kwargs):
 
+        shop_id = request.GET.get("id")
         charge_id = request.GET.get("charge_id")
-        shop_id = request.GET.get("shop_id")
-        ShopService().upgrade_plan(charge_id, shop_id)
+        ShopService().upgrade_plan(shop_id, charge_id)
 
         return self.redirect(getattr(settings, "BILLING_REDIRECT_URL", "/"))
