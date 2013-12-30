@@ -72,7 +72,7 @@ class ShopService(BaseService):
             "return_url": "%s%s" % (settings.HOST, "/shop/billing/"),
         }
 
-        if settings.TEST:
+        if getattr(settings, "TEST", True):
             data["test"] = True
         
         response = ShopifyService().RecurringApplicationCharge.create(data)
