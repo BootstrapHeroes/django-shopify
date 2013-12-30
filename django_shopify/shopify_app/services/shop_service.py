@@ -28,10 +28,8 @@ class ShopService(BaseService):
         shop = ShopifyService(token=token, domain=domain).Shop.current()
         shop_model, created = self.get_or_create(shop_id=shop.id)
 
-        for field in shop_model.fields():
-            #FIXME!!!!
-            if field not in ["id", "created_at", "updated_at", "shop_id", "token"]:
-                setattr(shop_model, field, shop.attributes.get(field))
+        for field in shop_model.update_fields():
+            setattr(shop_model, field, shop.attributes.get(field))
 
         shop_model.token = token
         shop_model.save()
