@@ -22,9 +22,8 @@ class PreferencesView(BaseView):
     @shop_login_required    
     def get(self, *args, **kwargs):
 
-        shop = self.service.install(self.request)
-        redirect_url = self.service.create_plan(shop)
-        
+        shop, redirect_url = self.service.install(self.request)
+
         if not redirect_url:
             redirect_url = "/"
 

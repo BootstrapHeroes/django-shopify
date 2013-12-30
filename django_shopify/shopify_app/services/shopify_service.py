@@ -66,3 +66,7 @@ class ShopifyService(object):
         """
 
         return getattr(shopify, name)
+
+    def is_active_charge(self, charge_id):
+        charge = shopify.RecurringApplicationCharge.find(charge_id)
+        return charge and (charge.status == "accepted" or charge.status == "active")
