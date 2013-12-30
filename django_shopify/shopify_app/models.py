@@ -101,7 +101,8 @@ class PlanConfig(BaseEntity):
 class Plan(PlanConfig):
 
     shop_id = models.ForeignKey("Shop")
-    planned_charge_date = models.DateTimeField(null=True, blank=True)
+    shop_id = models.ForeignKey("Shop")
+    charge_id = models.CharField(max_length=255, null=False, blank=False)
 
 
 class Config(BaseEntity):
