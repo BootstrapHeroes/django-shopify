@@ -14,10 +14,10 @@ Django-shopify Core App
 
 ####Services
 
-[Shopify service](https://github.com/BootstrapHeroes/django-shopify/wiki/Shopify-Service)
-[Shop service](https://github.com/BootstrapHeroes/django-shopify/wiki/Shop-Service)
-[Config service](https://github.com/BootstrapHeroes/django-shopify/wiki/Config-Service)
-[Base service](https://github.com/BootstrapHeroes/django-shopify/wiki/Base-Service)
+- [Shopify service](https://github.com/BootstrapHeroes/django-shopify/wiki/Shopify-Service)
+- [Shop service](https://github.com/BootstrapHeroes/django-shopify/wiki/Shop-Service)
+- [Config service](https://github.com/BootstrapHeroes/django-shopify/wiki/Config-Service)
+- [Base service](https://github.com/BootstrapHeroes/django-shopify/wiki/Base-Service)
 
 ####[Models](https://github.com/BootstrapHeroes/django-shopify/wiki/Models)
 
