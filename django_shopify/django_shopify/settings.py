@@ -178,3 +178,6 @@ SHOPIFY_HOST = "django-shopify-core-app-test.myshopify.com"
 
 SHOPIFY_TEST_HOST = "django-shopify-core-app-test.myshopify.com"
 SHOPIFY_TEST_PASSWORD = "eb8a666732076c0d89372197917f9a92"
+
+OAUTH_REDIRECT_URL = "/"
+BILLING_REDIRECT_URL = "/"

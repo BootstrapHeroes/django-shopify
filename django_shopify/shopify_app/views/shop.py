@@ -24,8 +24,19 @@ class PreferencesView(BaseView):
 
         shop = self.service.install(self.request)
         redirect_url = self.service.create_plan(shop)
-        
+
         if not redirect_url:
-            redirect_url = "/"
+            redirect_url = settings.OAUTH_REDIRECT_URL
 
         return self.redirect(redirect_url)
+
+
+class BillingView(BaseView):
+    """
+        Return handler for when a user accepts the billing plan for the app
+    """
+
+    @shop_login_required    
+    def get(self, *args, **kwargs):
+
+        return self.redirect(settings.BILLING_REDIRECT_URL)

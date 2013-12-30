@@ -69,7 +69,7 @@ class ShopService(BaseService):
             "name": plan_config.name,
             "price": plan_config.billing_amount,
             "trial_days": plan_config.trial_period_days,
-            "return_url": "%s%s" % (settings.HOST, reverse("shopify_config.views.upgrade")),
+            "return_url": "%s%s" % (settings.HOST, "/shop/billing/"),
         }
 
         if settings.TEST:
