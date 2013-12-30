@@ -8,3 +8,5 @@ requests
 
 nose
 django-nose
+webtest
+django-webtest

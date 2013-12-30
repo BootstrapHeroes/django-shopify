@@ -175,3 +175,6 @@ SHOPIFY_API_KEY = "f0513742b6f36ce70fe47558dfdde6e1"
 SHOPIFY_API_SECRET = "8860c190fda33fe3236cac43bb63c780"
 SHOPIFY_API_PASSWORD = "eb8a666732076c0d89372197917f9a92"
 SHOPIFY_HOST = "django-shopify-core-app-test.myshopify.com"
+
+SHOPIFY_TEST_HOST = "django-shopify-core-app-test.myshopify.com"
+SHOPIFY_TEST_PASSWORD = "eb8a666732076c0d89372197917f9a92"
