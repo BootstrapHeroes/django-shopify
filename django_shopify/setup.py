@@ -35,5 +35,5 @@ setup(
         "ShopifyApi",
         "requests",
     ],
-    #scripts=['bin/start_shopify_app'],
+    scripts=['bin/start_shopify_app'],
 )

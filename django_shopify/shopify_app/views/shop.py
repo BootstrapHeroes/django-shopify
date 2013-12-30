@@ -11,6 +11,7 @@ class IndexView(BaseView):
 
         return self.redirect("/shop/preferences")
 
+
 class PreferencesView(BaseView):
     """
         Main View to access the shop account
@@ -19,5 +20,6 @@ class PreferencesView(BaseView):
     @shop_login_required    
     def get(self, *args, **kwargs):
 
-        ShopService().install(self.request)
+        shop = ShopService().install(self.request)
+        
         return self.redirect("/")
