@@ -15,3 +15,7 @@ Django-shopify Core App
 ####Services
 
 [Shopify service](https://github.com/BootstrapHeroes/django-shopify/wiki/Shopify-Service)
+
+
+####[Models](https://github.com/BootstrapHeroes/django-shopify/wiki/Models)
+
