@@ -35,9 +35,24 @@ class ShopService(BaseService):
         shop_model.token = token
         shop_model.save()
 
+        redirect_url = False
+        if not self._check_active_plan(shop):
+            redirect_url = self.create_plan()
+
         self.post_install(request)
 
-        return shop_model
+        return shop_model, redirect_url
+
+    def _check_active_plan(self, shop):
+
+        if not ConfigService().is_active_billing():
+            return True
+
+        current_plan = shop.current_plan()
+        if not current_plan:
+            return False
+        else:
+            return ShopifyService().is_active_charge(current_plan.charge_id)
 
     def before_install(self, request):
         """

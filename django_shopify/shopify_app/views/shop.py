@@ -22,8 +22,7 @@ class PreferencesView(BaseView):
     @shop_login_required    
     def get(self, *args, **kwargs):
 
-        self.service.install(self.request)
-        redirect_url = self.service.get_upgrade_plan_url()
+        shop, redirect_url = self.service.install(self.request)
 
         if not redirect_url:
             redirect_url = settings.OAUTH_REDIRECT_URL

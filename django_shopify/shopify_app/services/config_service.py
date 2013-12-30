@@ -23,3 +23,13 @@ class ConfigService(BaseService):
                 self.config.save()
 
         return self.config
+
+    def is_active_billing(self):
+        config = self.get_config()
+
+        plan_config = config.plan_config
+        if plan_config is None or not plan_config.enable_billing:
+            return False
+
+        return True
+
