@@ -28,7 +28,10 @@ class ShopView(WebTest):
     def test_install_preferences(self):
 
         session = self.client.session
-        session["shopify"] = {'shop_url': settings.SHOPIFY_TEST_HOST, 'access_token': settings.SHOPIFY_TEST_PASSWORD}
+        session["shopify"] = {
+            "access_token": "c9ea03feb20b5aab04c95f421e0c96be",
+            "shop_url": "http://sticky-local.myshopify.com",
+        }
         session.save()
 
         # pretend to be logged in as user `kmike` and go to the index page

@@ -26,14 +26,14 @@ class ShopService(BaseService):
         self.before_install(request)        
 
         token = request.session.get('shopify', {}).get("access_token")
-        domain = request.session.get('shopify', {}).get("shop_url")
+        domain = request.session.get('shopify', {}).get("shop_url")        
 
         shopify_service = ShopifyService(token=token, domain=domain)
         shop = shopify_service.Shop.current()
         shop_model, created = self.get_or_create(shop_id=shop.id)
 
         for field in shop_model.update_fields():
-            setattr(shop_model, field, shop.attributes.get(field))
+            setattr(shop_model, field, shop.attributes.get(field))        
 
         shop_model.token = token
         shop_model.save()
@@ -84,9 +84,9 @@ class ShopService(BaseService):
         plan_config = config.plan_config
 
         data = {
-            "name": plan_config.name if plan_config else "Default",
-            "price": plan_config.billing_amount if plan_config else "10.0",
-            "trial_days": plan_config.trial_period_days if plan_config else 15,
+            "name": plan_config.name if plan_config.name else "Default",
+            "price": plan_config.billing_amount if plan_config.billing_amount else "10.0",
+            "trial_days": plan_config.trial_period_days if plan_config.trial_period_days else 15,
             "return_url": "%s/shop/billing/?shop=%s&plan_config=%s" % (getattr(settings, "HOST", DEFAULTS["HOST"]), shop.id, plan_config.id),
         }
 

@@ -1,6 +1,8 @@
 from base import BaseService
 from shopify_app.models import Config
 
+from plan_config_service import PlanConfigService
+
 
 class ConfigService(BaseService):
 
@@ -20,6 +22,14 @@ class ConfigService(BaseService):
             if self.config is None:
 
                 self.config = self.new(id=1)
+
+                if self.config.plan_config is None:
+
+                    plan_config = PlanConfigService().new()
+                    plan_config.save()
+
+                    self.config.plan_config = plan_config
+
                 self.config.save()
 
         return self.config

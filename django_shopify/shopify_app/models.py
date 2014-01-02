@@ -63,7 +63,7 @@ class Shop(BaseEntity):
     timezone = models.CharField(max_length=255, null=True, blank=True)
     zip = models.CharField(max_length=255, null=True, blank=True)
 
-    NOT_IN_FIELDS = ["id", "created_at", "updated_at", "shop", "token"]    
+    NOT_IN_FIELDS = ["id", "created_at", "updated_at", "shop_id", "token"]    
 
     def current_plan(self):
 
@@ -89,7 +89,7 @@ class PlanConfig(BaseEntity):
     name = models.CharField(max_length=255, null=True, blank=True)
     active = models.BooleanField(default=True)
 
-    billing_amount = models.DecimalField(max_digits=15, decimal_places=4)
+    billing_amount = models.DecimalField(max_digits=15, decimal_places=4, null=True, blank=True)
     billing_interval = models.CharField(max_length=2, null=True, blank=True, choices=BILLING_INTERVAL)
     billing_type = models.CharField(max_length=2, null=True, blank=True, choices=BILLING_TYPE)
 

@@ -36,14 +36,21 @@ class ShopServiceTest(TestCase):
 
         self.request = RequestMock()
         self.request.session["shopify"] = {
-            "access_token": settings.SHOPIFY_TEST_PASSWORD,
-            "shop_url": settings.SHOPIFY_TEST_HOST,
+            "access_token": "c9ea03feb20b5aab04c95f421e0c96be",
+            "shop_url": "http://sticky-local.myshopify.com",
         }
 
         self.shopify_service.public_app = True
 
+    def set_billing(self, state):
+
+        config = self.config_service.get_config()
+        config.enable_billing = state
+        config.save()
+
     def test_shop_install(self):
-        
+
+        self.set_billing(False)
         shop, redirect_url = ShopService().install(self.request)
 
         self.assertTrue(shop.id is not None)
@@ -51,10 +58,7 @@ class ShopServiceTest(TestCase):
         
     def test_shop_billing_install(self):
         
-        config = self.config_service.get_config()
-        config.enable_billing = True
-        config.save()
-
+        self.set_billing(True)
         shop, redirect_url = ShopService().install(self.request)
 
         self.assertTrue(shop.id is not None)
