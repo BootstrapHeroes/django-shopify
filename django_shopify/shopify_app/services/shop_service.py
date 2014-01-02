@@ -81,9 +81,7 @@ class ShopService(BaseService):
             return False
 
         config = ConfigService().get_config()
-        plan_config = config.plan_config
-        import ipdb
-        ipdb.set_trace()
+        plan_config = config.plan_config        
         
         data = {
             "name": plan_config.name if plan_config.name else "Default",
