@@ -6,6 +6,9 @@ from shopify_app.utils.python import normalize_url
 
 class ShopifyService(object):
 
+    #Set to True to force public app
+    public_app = False
+
     def __new__(cls, *args, **kwargs):
         """ 
             Singleton class
@@ -17,7 +20,8 @@ class ShopifyService(object):
     def _init_public_app(self, token, domain):
         """
             Initializes the shopify api client with the key of the shop
-        """
+        """        
+
         try:
             session = shopify.Session(domain)
             session.token = token
@@ -46,7 +50,7 @@ class ShopifyService(object):
 
     def __init__(self, token=None, domain=None, shop=None):
 
-        if getattr(settings, "PUBLIC_APP", False):
+        if getattr(settings, "PUBLIC_APP", False) or self.public_app:
             
             if shop:
                 token = shop.token
@@ -68,5 +72,7 @@ class ShopifyService(object):
         return getattr(shopify, name)
 
     def is_active_charge(self, charge_id):
+
         charge = shopify.RecurringApplicationCharge.find(charge_id)
         return charge and (charge.status == "accepted" or charge.status == "active")
+

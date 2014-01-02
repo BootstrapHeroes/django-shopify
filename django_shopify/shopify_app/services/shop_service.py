@@ -21,7 +21,7 @@ class ShopService(BaseService):
             all the shopify API shop attributes.
         """
 
-        self.before_install(request)
+        self.before_install(request)        
 
         token = request.session.get('shopify', {}).get("access_token")
         domain = request.session.get('shopify', {}).get("shop_url")
@@ -94,9 +94,13 @@ class ShopService(BaseService):
         response = shopify_service.RecurringApplicationCharge.create(data)
         response_data = response.to_dict()
 
+        if response.errors.errors:
+            raise Exception(str(response.errors.errors))
+
         return response_data["confirmation_url"]
 
     def upgrade_plan(self, identifier, charge_id):
+
         shop_model = self.get(id=identifier)
 
         plan = PlanService().new(shop=shop_model)
