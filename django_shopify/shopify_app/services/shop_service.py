@@ -82,7 +82,9 @@ class ShopService(BaseService):
 
         config = ConfigService().get_config()
         plan_config = config.plan_config
-
+        import ipdb
+        ipdb.set_trace()
+        
         data = {
             "name": plan_config.name if plan_config.name else "Default",
             "price": plan_config.billing_amount if plan_config.billing_amount else "10.0",
