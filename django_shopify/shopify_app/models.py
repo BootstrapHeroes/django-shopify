@@ -73,6 +73,11 @@ class Shop(BaseEntity):
 
         return plans[0]
 
+    def __unicode__(self):
+
+        return "{0} - {1}".format(self.shop_id, self.domain)
+
+
 class PlanAttributes(BaseEntity):
 
     BILLING_INTERVAL = (
@@ -97,18 +102,21 @@ class PlanAttributes(BaseEntity):
     class Meta:
         abstract = True
 
-class PlanConfig(PlanAttributes):
-
-    NOT_IN_FIELDS = ["id", "created_at", "updated_at"]
-
     def __unicode__(self):
 
         return "{0} - ${1}".format(self.name, self.billing_amount)
+
+
+class PlanConfig(PlanAttributes):
+
+    NOT_IN_FIELDS = ["id", "created_at", "updated_at"]    
+
 
 class Plan(PlanAttributes):
 
     shop = models.ForeignKey("Shop")
     charge_id = models.CharField(max_length=255, null=False, blank=False)
+
 
 class Config(BaseEntity):
 
