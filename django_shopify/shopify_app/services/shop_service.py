@@ -85,7 +85,7 @@ class ShopService(BaseService):
             "name": plan_config.name if plan_config else "Default",
             "price": plan_config.billing_amount if plan_config else "10.0",
             "trial_days": plan_config.trial_period_days if plan_config else 15,
-            "return_url": "%s%s%s" % (getattr(settings, "HOST", "127.0.0.1:8000"), "/shop/billing/?id=", shop.id),
+            "return_url": "%s%s%s" % (getattr(settings, "HOST", "http://127.0.0.1:8000"), "/shop/billing/?id=", shop.id),
         }
 
         if getattr(settings, "TEST", True):
