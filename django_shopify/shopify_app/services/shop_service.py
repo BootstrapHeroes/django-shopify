@@ -55,7 +55,7 @@ class ShopService(BaseService):
         if not current_plan:
             return False
         else:
-            return ShopifyService(shop_model).is_active_charge(current_plan.charge_id)
+            return ShopifyService(shop).is_active_charge(current_plan.charge_id)
 
     def before_install(self, request):
         """
