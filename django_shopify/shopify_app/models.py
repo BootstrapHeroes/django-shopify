@@ -97,6 +97,10 @@ class PlanConfig(BaseEntity):
 
     NOT_IN_FIELDS = ["id", "created_at", "updated_at"]
 
+    def __unicode__(self):
+
+        return "{0} - ${1}".format(self.name, self.billing_amount)
+
 
 class Plan(PlanConfig):
 
@@ -110,3 +114,7 @@ class Config(BaseEntity):
     enable_billing = models.BooleanField(default=False)
         
     plan_config = models.OneToOneField("PlanConfig", null=True, blank=True)
+
+    def __unicode__(self):
+
+        return "{0}".format(self.id)

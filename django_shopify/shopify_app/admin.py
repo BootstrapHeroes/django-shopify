@@ -1,10 +1,11 @@
 from django.contrib import admin
-from shopify_app.models import Config
+from shopify_app.models import Config, PlanConfig
 
 
-class ConfigAdmin(admin.ModelAdmin):
+class BaseAdmin(admin.ModelAdmin):
 
     exclude = ["created_at", "updated_at"]
 
 
-admin.site.register(Config, ConfigAdmin)
+admin.site.register(Config, BaseAdmin)
+admin.site.register(PlanConfig, BaseAdmin)
