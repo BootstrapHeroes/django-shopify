@@ -63,7 +63,7 @@ class Shop(BaseEntity):
     timezone = models.CharField(max_length=255, null=True, blank=True)
     zip = models.CharField(max_length=255, null=True, blank=True)
 
-    NOT_IN_FIELDS = ["id", "created_at", "updated_at", "shop_id", "token"]    
+    NOT_IN_FIELDS = ["id", "created_at", "updated_at", "shop", "token"]    
 
     def current_plan(self):
 
@@ -104,8 +104,7 @@ class PlanConfig(BaseEntity):
 
 class Plan(PlanConfig):
 
-    shop_id = models.ForeignKey("Shop")
-    shop_id = models.ForeignKey("Shop")
+    shop = models.ForeignKey("Shop")
     charge_id = models.CharField(max_length=255, null=False, blank=False)
 
 
