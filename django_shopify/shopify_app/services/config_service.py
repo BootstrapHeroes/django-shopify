@@ -19,12 +19,15 @@ class ConfigService(BaseService):
 
             if self.config is None:
 
-                self.config = self.new()
+                self.config = self.new(id=1)
                 self.config.save()
 
         return self.config
 
     def is_active_billing(self):
-        config = self.get_config()
-        return config and config.enable_billing
+        """
+            Returns if the billing is enabled or not
+        """
 
+        config = self.get_config()
+        return config is not None and config.enable_billing

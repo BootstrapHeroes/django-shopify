@@ -3,10 +3,12 @@ from django.conf import settings
 
 from shopify_app.models import Shop
 from shopify_app.utils.python import normalize_url
+from shopify_app.config import DEFAULTS
 
 from shopify_service import ShopifyService
 from config_service import ConfigService
 from plan_service import PlanService
+from plan_config_service import PlanConfigService
 
 
 class ShopService(BaseService):
@@ -21,7 +23,7 @@ class ShopService(BaseService):
             all the shopify API shop attributes.
         """
 
-        self.before_install(request)
+        self.before_install(request)        
 
         token = request.session.get('shopify', {}).get("access_token")
         domain = request.session.get('shopify', {}).get("shop_url")
@@ -87,7 +89,7 @@ class ShopService(BaseService):
             "name": plan_config.name if plan_config else "Default",
             "price": plan_config.billing_amount if plan_config else "10.0",
             "trial_days": plan_config.trial_period_days if plan_config else 15,
-            "return_url": "%s%s%s" % (getattr(settings, "HOST", "127.0.0.1:8000"), "/shop/billing/?id=", shop.id),
+            "return_url": "%s/shop/billing/?shop=%s&plan_config=%s" % (getattr(settings, "HOST", DEFAULTS["HOST"]), shop.id, plan_config.id),
         }
 
         if getattr(settings, "TEST", True):
@@ -96,13 +98,20 @@ class ShopService(BaseService):
         response = shopify_service.RecurringApplicationCharge.create(data)
         response_data = response.to_dict()
 
+        if response.errors.errors:
+            raise Exception(str(response.errors.errors))
+
         return response_data["confirmation_url"]
 
-    def upgrade_plan(self, identifier, charge_id):
-        shop_model = self.get(id=identifier)
+    def upgrade_plan(self, shop_id, plan_config_id, charge_id):
+
+        shop_model = self.get(id=shop_id)
 
         plan = PlanService().new(shop=shop_model)
+        plan_config = PlanConfigService().get(id=plan_config_id)
+
         for field in plan_config.update_fields():
             setattr(plan, field, getattr(plan_config, field, ""))
 
+        plan.charge_id = charge_id
         plan.save()

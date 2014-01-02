@@ -63,7 +63,7 @@ class Shop(BaseEntity):
     timezone = models.CharField(max_length=255, null=True, blank=True)
     zip = models.CharField(max_length=255, null=True, blank=True)
 
-    NOT_IN_FIELDS = ["id", "created_at", "updated_at", "shop_id", "token"]    
+    NOT_IN_FIELDS = ["id", "created_at", "updated_at", "shop", "token"]    
 
     def current_plan(self):
 
@@ -97,11 +97,14 @@ class PlanConfig(BaseEntity):
 
     NOT_IN_FIELDS = ["id", "created_at", "updated_at"]
 
+    def __unicode__(self):
+
+        return "{0} - ${1}".format(self.name, self.billing_amount)
+
 
 class Plan(PlanConfig):
 
-    shop_id = models.ForeignKey("Shop")
-    shop_id = models.ForeignKey("Shop")
+    shop = models.ForeignKey("Shop")
     charge_id = models.CharField(max_length=255, null=False, blank=False)
 
 
@@ -110,3 +113,7 @@ class Config(BaseEntity):
     enable_billing = models.BooleanField(default=False)
         
     plan_config = models.OneToOneField("PlanConfig", null=True, blank=True)
+
+    def __unicode__(self):
+
+        return "{0}".format(self.id)
