@@ -80,11 +80,6 @@ class Shop(BaseEntity):
 
 class PlanAttributes(BaseEntity):
 
-    BILLING_INTERVAL = (
-        ('D', 'Daily'),
-        ('M', 'weekly'),
-    )
-
     BILLING_TYPE = (
         ('O', 'One Time'),
         ('I', 'Interval'),
@@ -94,7 +89,6 @@ class PlanAttributes(BaseEntity):
     active = models.BooleanField(default=True)
 
     billing_amount = models.DecimalField(max_digits=15, decimal_places=4, null=True, blank=True)
-    billing_interval = models.CharField(max_length=2, null=True, blank=True, choices=BILLING_INTERVAL)
     billing_type = models.CharField(max_length=2, null=True, blank=True, choices=BILLING_TYPE)
 
     trial_period_days = models.PositiveIntegerField(null=True, blank=True)
