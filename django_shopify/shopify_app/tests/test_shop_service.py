@@ -33,8 +33,8 @@ class ShopServiceTest(TestCase):
 
     def test_shop_install(self):
         
-        shop = ShopService().install(self.request)        
-        ShopService().create_plan(shop)
+        shop, redirect_url = ShopService().install(self.request)
 
         self.assertTrue(shop.id is not None)
+        self.assertTrue(redirect_url is False)
         
