@@ -25,8 +25,9 @@ class ShopService(BaseService):
 
         token = request.session.get('shopify', {}).get("access_token")
         domain = request.session.get('shopify', {}).get("shop_url")
-        
-        shop = ShopifyService(token=token, domain=domain).Shop.current()
+
+        shopify_service = ShopifyService(token=token, domain=domain)
+        shop = shopify_service.Shop.current()
         shop_model, created = self.get_or_create(shop_id=shop.id)
 
         for field in shop_model.update_fields():
@@ -36,8 +37,8 @@ class ShopService(BaseService):
         shop_model.save()
 
         redirect_url = False
-        if not self._check_active_plan(shop):
-            redirect_url = self.create_plan()
+        if not self._check_active_plan(shop_model):
+            redirect_url = self.get_upgrade_plan_url(shopify_service, shop_model)
 
         self.post_install(request)
 
@@ -52,7 +53,7 @@ class ShopService(BaseService):
         if not current_plan:
             return False
         else:
-            return ShopifyService().is_active_charge(current_plan.charge_id)
+            return ShopifyService(shop_model).is_active_charge(current_plan.charge_id)
 
     def before_install(self, request):
         """
@@ -68,37 +69,35 @@ class ShopService(BaseService):
 
         pass
 
-    def get_upgrade_plan_url(self):
+    def get_upgrade_plan_url(self, shopify_service, shop):
         """
             Creates the shop plan and returns the confirmation url where
             the user should accept the billing.
         """
 
-        config = ConfigService().get_config()
-
-        plan_config = config.plan_config
-        if plan_config is None or not plan_config.enable_billing:
+        if not ConfigService().is_active_billing():
             return False
 
+        config = ConfigService().get_config()
+        plan_config = config.plan_config
+
         data = {
-            "name": plan_config.name,
-            "price": plan_config.billing_amount,
-            "trial_days": plan_config.trial_period_days,
-            "return_url": "%s%s" % (settings.HOST, "/shop/billing/"),
+            "name": plan_config.name if plan_config else "Default",
+            "price": plan_config.billing_amount if plan_config else "10.0",
+            "trial_days": plan_config.trial_period_days if plan_config else 15,
+            "return_url": "%s%s%s" % (getattr(settings, "HOST", "127.0.0.1:8000"), "/shop/billing/?id=", shop.id),
         }
 
         if getattr(settings, "TEST", True):
             data["test"] = True
         
-        response = ShopifyService().RecurringApplicationCharge.create(data)
+        response = shopify_service.RecurringApplicationCharge.create(data)
         response_data = response.to_dict()
 
         return response_data["confirmation_url"]
 
-    def upgrade_plan(self, charge_id):
-
-        shop = ShopifyService().Shop.current()
-        shop_model = self.get(shop_id=shop.id)
+    def upgrade_plan(self, identifier, charge_id):
+        shop_model = self.get(id=identifier)
 
         plan = PlanService().new(shop=shop_model)
         for field in plan_config.update_fields():

@@ -30,6 +30,4 @@ class ConfigService(BaseService):
         """
 
         config = self.get_config()
-        plan_config = config.plan_config
-
-        return plan_config is not None and plan_config.enable_billing
+        return config is not None and config.enable_billing
