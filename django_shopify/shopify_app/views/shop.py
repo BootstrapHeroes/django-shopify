@@ -6,19 +6,22 @@ from shopify_app.decorators import shop_login_required
 from shopify_app.services.shop_service import ShopService
 
 
-class IndexView(BaseView):
+class BaseShopView(BaseView):
+
+    service = ShopService()
+
+
+class IndexView(BaseShopView):
 
     def get(self, *args, **kwargs):
 
         return self.redirect("/shop/preferences")
 
 
-class PreferencesView(BaseView):
+class PreferencesView(BaseShopView):
     """
         Main View to access the shop account
     """
-
-    service = ShopService()
     
     @shop_login_required    
     def get(self, *args, **kwargs):
@@ -31,7 +34,7 @@ class PreferencesView(BaseView):
         return self.redirect(redirect_url)
 
 
-class BillingView(BaseView):
+class BillingView(BaseShopView):
     """
         Return handler for when a user accepts the billing plan for the app
     """

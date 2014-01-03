@@ -1,5 +1,7 @@
 from shopify_app.views.base import BaseView
 
+from extended_app.models import ExtendedShop
+
 
 class IndexView(BaseView):
 
@@ -7,11 +9,8 @@ class IndexView(BaseView):
 
     def get(self, *args, **kwargs):
 
-        context = {"PROJECT_VERSION": "0.0.1"}
-
-        try:
-            context["shop"] = ShopifyService().Shop.current()
-        except:
-            pass
+        context = {
+            "shops": ExtendedShop.objects.all()
+        }
 
         return self.render_to_response(context)
