@@ -74,9 +74,9 @@ class ShopifyService(object):
     def is_active_charge(self, charge_id):
 
         charge = shopify.ApplicationCharge.find(charge_id)
-        return charge and (charge.status == "accepted" or charge.status == "active")
+        return charge and (charge.status == "active")
 
     def is_active_recurring_charge(self, charge_id):
 
         charge = shopify.RecurringApplicationCharge.find(charge_id)
-        return charge and (charge.status == "accepted" or charge.status == "active")
+        return charge and (charge.status == "active")

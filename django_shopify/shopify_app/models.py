@@ -111,6 +111,8 @@ class Plan(PlanAttributes):
     shop = models.ForeignKey("Shop")
     charge_id = models.CharField(max_length=255, null=False, blank=False)
 
+    installed_at = models.DateTimeField(null=True, blank=True)
+    uninstalled_at = models.DateTimeField(null=True, blank=True)
 
 class Config(BaseEntity):
 

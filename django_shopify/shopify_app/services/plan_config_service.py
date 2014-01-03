@@ -2,7 +2,7 @@ from base import BaseService
 from shopify_app.models import PlanConfig
 from django.conf import settings
 from shopify_app.config import DEFAULTS
-
+from datetime import datetime
 
 class PlanConfigService(BaseService):
 
@@ -30,8 +30,12 @@ class PlanConfigService(BaseService):
     def recurring_charge(self, shopify_service, shop, plan_config):
 
         data = self._get_charge_common_data(shop, plan_config)
-        data["trial_days"] = plan_config.trial_period_days if plan_config.trial_period_days else 15
-        
+        default_trial_days = plan_config.trial_period_days if plan_config.trial_period_days else 15
+
+        current_trial_days = (datetime.utcnow().replace(tzinfo=None) - shop.created_at.replace(tzinfo=None)).days
+        if not current_trial_days >= default_trial_days:
+            data["trial_days"] = default_trial_days - current_trial_days
+
         return shopify_service.RecurringApplicationCharge.create(data)
 
     def confirm_data(self, shopify_service, shop, plan_config):

@@ -7,7 +7,7 @@ from shopify_service import ShopifyService
 from config_service import ConfigService
 from plan_service import PlanService
 from plan_config_service import PlanConfigService
-
+from datetime import datetime
 
 class ShopService(BaseService):
 
@@ -53,7 +53,7 @@ class ShopService(BaseService):
         if not current_plan:
             return False
         else:
-            return PlanService().is_active_plan(shop, current_plan)
+            return PlanService().is_active_plan(current_plan)
 
     def before_install(self, request):
         """
@@ -87,12 +87,18 @@ class ShopService(BaseService):
     def upgrade_plan(self, shop_id, plan_config_id, charge_id):
 
         shop_model = self.get(id=shop_id)
+        charge = ShopifyService(shop=shop_model).RecurringApplicationCharge.find(charge_id)
+        charge.activate()
 
-        plan = PlanService().new(shop=shop_model)
-        plan_config = PlanConfigService().get(id=plan_config_id)
+        charge = ShopifyService(shop=shop_model).RecurringApplicationCharge.find(charge_id)
 
-        for field in plan_config.update_fields():
-            setattr(plan, field, getattr(plan_config, field, ""))
+        if charge.status == "active":
+            plan = PlanService().new(shop=shop_model)
+            plan_config = PlanConfigService().get(id=plan_config_id)
 
-        plan.charge_id = charge_id
-        plan.save()
+            for field in plan_config.update_fields():
+                setattr(plan, field, getattr(plan_config, field, ""))
+
+            plan.charge_id = charge_id
+            plan.installed_at = datetime.utcnow()
+            plan.save()
