@@ -7,7 +7,11 @@ import extended_app.views as extended_app_root
 
 admin.autodiscover()
 
-urlpatterns = patterns('',
+urlpatterns = []
+
+UrlsManager(urlpatterns, extended_app_root)
+
+urlpatterns = urlpatterns + patterns('',
 
     url(r'^admin/', include(admin.site.urls)),
     (r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': MEDIA_ROOT, 'show_indexes': True}),
@@ -15,5 +19,3 @@ urlpatterns = patterns('',
     url(r'^', include('shopify_app.urls'), name='root_path'),
 
 )
-
-UrlsManager(urlpatterns, extended_app_root)

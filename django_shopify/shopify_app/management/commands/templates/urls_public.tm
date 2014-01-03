@@ -7,7 +7,11 @@ import {app_name}.views as {app_name}_root
 
 admin.autodiscover()
 
-urlpatterns = patterns('',
+urlpatterns = []
+
+UrlsManager(urlpatterns, {app_name}_root)
+
+urlpatterns = urlpatterns + patterns('',
 
     url(r'^admin/', include(admin.site.urls)),
     (r'^media/(?P<path>.*)$', 'django.views.static.serve', {{'document_root': MEDIA_ROOT, 'show_indexes': True}}),
@@ -16,4 +20,3 @@ urlpatterns = patterns('',
 
 )
 
-UrlsManager(urlpatterns, {app_name}_root)
