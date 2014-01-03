@@ -12,14 +12,6 @@ class BaseService(object):
 
     default_query_params = {}
 
-    def __new__(cls, *args, **kwargs):
-        """ 
-            Singleton class
-        """
-        if not hasattr(cls, "_instance"):
-            cls._instance = super(BaseService, cls).__new__(cls, *args, **kwargs)
-        return cls._instance
-
     def __getattr__(self, name):
         """
             Delegates automatically all undefined methods on the repository entity.            
