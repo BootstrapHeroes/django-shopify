@@ -34,6 +34,9 @@ class ShopService(BaseService):
             setattr(shop_model, field, shop.attributes.get(field))        
 
         shop_model.token = token
+
+        self.before_save(shop_model, request)
+
         shop_model.save()
 
         redirect_url = False
@@ -59,6 +62,14 @@ class ShopService(BaseService):
             return False
         
         return PlanService().is_active_plan(current_plan)
+
+
+    def before_save(self, shop_model, request):
+        """
+            Override this method and add behaviour on before save shop
+        """
+
+        pass
 
     def before_install(self, request):
         """
