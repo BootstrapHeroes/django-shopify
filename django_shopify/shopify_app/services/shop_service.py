@@ -55,7 +55,7 @@ class ShopService(BaseService):
         if not current_plan:
             return False
         else:
-            return ShopifyService(shop=shop).is_active_charge(current_plan.charge_id)
+            return PlanService().is_active_plan(shop, current_plan)
 
     def before_install(self, request):
         """
@@ -87,7 +87,7 @@ class ShopService(BaseService):
     def one_time_charge(self, shopify_service, shop, plan_config):
 
         data = self._get_charge_common_data(shop, plan_config)
-        
+
         return shopify_service.ApplicationCharge.create(data)
 
     def recurring_charge(self, shopify_service, shop, plan_config):
