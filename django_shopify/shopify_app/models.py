@@ -114,6 +114,7 @@ class Plan(PlanAttributes):
     installed_at = models.DateTimeField(null=True, blank=True)
     uninstalled_at = models.DateTimeField(null=True, blank=True)
 
+
 class Config(BaseEntity):
 
     enable_billing = models.BooleanField(default=False)
