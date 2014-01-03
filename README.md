@@ -11,6 +11,7 @@ Django-shopify Core App
 ####Getting Started
 
 - [Installation and basic usage](https://github.com/BootstrapHeroes/django-shopify/wiki/Getting-started)
+- [Configuring the app](https://github.com/BootstrapHeroes/django-shopify/wiki/Configuring-the-app)
 
 ####Services
 
