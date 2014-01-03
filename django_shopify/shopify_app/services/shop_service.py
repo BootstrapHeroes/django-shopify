@@ -45,10 +45,15 @@ class ShopService(BaseService):
         return shop_model, redirect_url
 
     def _check_active_plan(self, shop):
-
+        """
+            This method checks if the given shop has an active plan 
+            and return a boolean with the result
+        """
+        #Check if the payments are disabled, so in this case the plan is active (doesnt need one)
         if not ConfigService().is_active_billing():
             return True
 
+        #Check if the user has a plan or if has an inactive plan
         current_plan = shop.current_plan()
         if not current_plan:
             return False

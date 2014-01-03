@@ -28,7 +28,9 @@ class BaseEntity(models.Model):
 
 
 class Shop(BaseEntity):
-
+    """
+        Represents a Store with all the information stored on shopify API
+    """
     shop_id = models.CharField(max_length=255, null=False, blank=False, unique=True)
     token = models.CharField(max_length=255, null=True, blank=True)
 
@@ -79,7 +81,9 @@ class Shop(BaseEntity):
 
 
 class PlanAttributes(BaseEntity):
-
+    """
+        Represents the plan attributes needed to bill stores
+    """
     BILLING_TYPE = (
         ('O', 'One Time'),
         ('I', 'Interval'),
@@ -102,12 +106,16 @@ class PlanAttributes(BaseEntity):
 
 
 class PlanConfig(PlanAttributes):
-
+    """
+        Represents the payments configuration for bill shops
+    """
     NOT_IN_FIELDS = ["id", "created_at", "updated_at"]    
 
 
 class Plan(PlanAttributes):
-
+    """
+        Represents the agreement associated with a shop based on the plan attributes.
+    """
     shop = models.ForeignKey("Shop")
     charge_id = models.CharField(max_length=255, null=False, blank=False)
 
@@ -116,7 +124,9 @@ class Plan(PlanAttributes):
 
 
 class Config(BaseEntity):
-
+    """
+        Represents the payment configuration for all shops specified by the admin.
+    """
     enable_billing = models.BooleanField(default=False)
         
     plan_config = models.OneToOneField("PlanConfig", null=True, blank=True)
