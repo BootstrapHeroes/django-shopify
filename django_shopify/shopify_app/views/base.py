@@ -21,12 +21,6 @@ class BaseView(TemplateView):
 
         return HttpResponseRedirect(url)
 
-    def redirect_on_logout(self, url):
-
-        response = self.redirect(url)
-        response.delete_cookie("sticky-admin.isadminuser")
-        return response
-
     def response(self, response, no_cache=False, headers={}):
         
         http_response = HttpResponse(response)
@@ -50,12 +44,6 @@ class BaseView(TemplateView):
     def json_response(self, response):
 
         return self.response(json.dumps(response))
-
-    def json_response_login(self, response):
-
-        response = self.json_response(response)
-        response.set_cookie("sticky-admin.isadminuser", "1")
-        return response
 
     def json_loads(self, data):
 

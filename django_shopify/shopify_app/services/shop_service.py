@@ -52,8 +52,8 @@ class ShopService(BaseService):
         current_plan = shop.current_plan()
         if not current_plan:
             return False
-        else:
-            return PlanService().is_active_plan(current_plan)
+        
+        return PlanService().is_active_plan(current_plan)
 
     def before_install(self, request):
         """
@@ -85,17 +85,26 @@ class ShopService(BaseService):
         return response_data["confirmation_url"]
 
     def upgrade_plan(self, shop_id, plan_config_id, charge_id):
+        """
+            Upgrades the plan for the current [shop_id] using the [plan_config_id].
+            It also saved the [charge_id] on the plan model.
+        """
 
         shop_model = self.get(id=shop_id)
+
+        #Activate the charge via the api
         charge = ShopifyService(shop=shop_model).RecurringApplicationCharge.find(charge_id)
         charge.activate()
 
+        #Check if the chargs is already activated
         charge = ShopifyService(shop=shop_model).RecurringApplicationCharge.find(charge_id)
 
         if charge.status == "active":
+
             plan = PlanService().new(shop=shop_model)
             plan_config = PlanConfigService().get(id=plan_config_id)
 
+            #copies all the attributes from the plan_config to the plan model
             for field in plan_config.update_fields():
                 setattr(plan, field, getattr(plan_config, field, ""))
 
