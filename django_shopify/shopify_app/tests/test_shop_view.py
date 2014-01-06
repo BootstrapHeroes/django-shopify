@@ -2,6 +2,7 @@ from django_webtest import WebTest
 from django.conf import settings
 from django.utils.importlib import import_module
 from shopify_app.models import Shop
+from shopify_app.services import ConfigService
 
 class ShopView(WebTest):
 
@@ -45,3 +46,25 @@ class ShopView(WebTest):
 
         assert response.status_code == 302
         assert len(Shop.objects.filter(myshopify_domain=settings.SHOPIFY_TEST_HOST))== 1
+    """
+    def test_install_with_payments(self):
+        config = ConfigService().get_config()
+        config.enable_billing = True
+        config.save()
+
+        session = self.client.session
+        session["shopify"] = {
+            "access_token": "c9ea03feb20b5aab04c95f421e0c96be",
+            "shop_url": "http://sticky-local.myshopify.com",
+        }
+        session.save()
+
+        # pretend to be logged in as user `kmike` and go to the index page
+        response = self.client.get('/shop/preferences/')
+
+        import ipdb
+        ipdb.set_trace()
+
+        config.enable_billing = False
+        config.save()
+    """
