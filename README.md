@@ -11,8 +11,9 @@ Django-shopify Core App
 ####Getting Started
 
 - [Installation and basic usage](https://github.com/BootstrapHeroes/django-shopify/wiki/Getting-started)
-- [Configuring the app](https://github.com/BootstrapHeroes/django-shopify/wiki/Configuring-the-app)
+- [Extending the app](https://github.com/BootstrapHeroes/django-shopify/wiki/Extending-the-app)
 - [Configuring the settings.py](https://github.com/BootstrapHeroes/django-shopify/wiki/Config-vars-in-settings.py)
+- [Configuring the app](https://github.com/BootstrapHeroes/django-shopify/wiki/Configuring-the-app)
 
 ####Services
 - [Oauth service](https://github.com/BootstrapHeroes/django-shopify/wiki/Oauth)
