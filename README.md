@@ -23,3 +23,4 @@ Django-shopify Core App
 
 ####[Models](https://github.com/BootstrapHeroes/django-shopify/wiki/Models)
 
+####[Extending the app](https://github.com/BootstrapHeroes/django-shopify/wiki/Extending-the-app)
