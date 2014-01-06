@@ -2,14 +2,15 @@ import simplejson as json
 from django.test import TestCase
 
 from django.conf import settings
+from django.utils.importlib import import_module
 from shopify_app.services import ShopifyService
 
 
 class ShopifyServiceTest(TestCase):
 
     def test_get_all_customers(self):
-            
-        objs = ShopifyService().Customer.find()
+
+        objs = ShopifyService(token=settings.SHOPIFY_TEST_PASSWORD, domain=settings.SHOPIFY_TEST_HOST).Customer.find()
 
         self.assertEquals(type(objs), list)
         self.assertEquals(len(objs), 1)
@@ -28,7 +29,7 @@ class ShopifyServiceTest(TestCase):
             "tags": "test"
         }        
 
-        product = ShopifyService().Product.create(data)
+        product = ShopifyService(token=settings.SHOPIFY_TEST_PASSWORD, domain=settings.SHOPIFY_TEST_HOST).Product.create(data)
 
         self.assertEquals(type(product.id), int)
 
@@ -37,11 +38,11 @@ class ShopifyServiceTest(TestCase):
 
     def test_delete_products(self):
 
-        products = ShopifyService().Product.find()
+        products = ShopifyService(token=settings.SHOPIFY_TEST_PASSWORD, domain=settings.SHOPIFY_TEST_HOST).Product.find()
 
         for product in products:            
             product.destroy()
 
-        products = ShopifyService().Product.find()
+        products = ShopifyService(token=settings.SHOPIFY_TEST_PASSWORD, domain=settings.SHOPIFY_TEST_HOST).Product.find()
 
         self.assertEquals(products, [])

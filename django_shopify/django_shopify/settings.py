@@ -176,8 +176,15 @@ SHOPIFY_API_SECRET = "8860c190fda33fe3236cac43bb63c780"
 SHOPIFY_API_PASSWORD = "eb8a666732076c0d89372197917f9a92"
 SHOPIFY_HOST = "django-shopify-core-app-test.myshopify.com"
 
+if 'test' in sys.argv:
+    SHOPIFY_API_KEY = "82d4214d75f35a1a183f6b00683f34bc"
+    SHOPIFY_API_SECRET = "8d8ac4df924d512a5a4e16392ad433f8"
+
 SHOPIFY_TEST_HOST = "django-shopify-core-app-test.myshopify.com"
-SHOPIFY_TEST_PASSWORD = "eb8a666732076c0d89372197917f9a92"
+SHOPIFY_TEST_PASSWORD = "c774ae8c546c509c5daeffb5676de0eb"
 
 OAUTH_REDIRECT_URL = "/"
 BILLING_REDIRECT_URL = "/"
+
+if 'test' in sys.argv:
+    PUBLIC_APP = True

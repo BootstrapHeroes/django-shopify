@@ -30,8 +30,8 @@ class ShopView(WebTest):
 
         session = self.client.session
         session["shopify"] = {
-            "access_token": "c9ea03feb20b5aab04c95f421e0c96be",
-            "shop_url": "http://sticky-local.myshopify.com",
+            "access_token": settings.SHOPIFY_TEST_PASSWORD,
+            "shop_url": settings.SHOPIFY_TEST_HOST,
         }
         session.save()
 
@@ -46,7 +46,7 @@ class ShopView(WebTest):
 
         assert response.status_code == 302
         assert len(Shop.objects.filter(myshopify_domain=settings.SHOPIFY_TEST_HOST))== 1
-    """
+
     def test_install_with_payments(self):
         config = ConfigService().get_config()
         config.enable_billing = True
@@ -54,17 +54,17 @@ class ShopView(WebTest):
 
         session = self.client.session
         session["shopify"] = {
-            "access_token": "c9ea03feb20b5aab04c95f421e0c96be",
-            "shop_url": "http://sticky-local.myshopify.com",
+            "access_token": settings.SHOPIFY_TEST_PASSWORD,
+            "shop_url": settings.SHOPIFY_TEST_HOST,
         }
         session.save()
 
         # pretend to be logged in as user `kmike` and go to the index page
         response = self.client.get('/shop/preferences/')
 
-        import ipdb
-        ipdb.set_trace()
+        assert response.status_code == 302
+        assert "%s/admin/charges/"%settings.SHOPIFY_TEST_HOST in response["location"]
+        assert Shop.objects.filter(myshopify_domain=settings.SHOPIFY_TEST_HOST).exists()        
 
         config.enable_billing = False
         config.save()
-    """
