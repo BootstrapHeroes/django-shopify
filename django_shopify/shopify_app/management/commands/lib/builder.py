@@ -42,7 +42,7 @@ class ProjectBuilder(object):
 
         if self.project_name == None:
             print AnsiColors.WARNING + "Please provide a project name." + AnsiColors.ENDC
-            print "Usage: start_shopify_app [project_name]" + AnsiColors.FAIL
+            print "Usage: start_shopify_app [project_name]" + AnsiColors.ENDC
             print
             sys.exit()
         else:  
