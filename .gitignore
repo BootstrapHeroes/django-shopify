@@ -35,3 +35,7 @@ nosetests.xml
 
 *.sqlite*
 *.orig
+
+# OS X files
+.DS_Store
+
