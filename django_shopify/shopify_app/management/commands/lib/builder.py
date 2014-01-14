@@ -3,7 +3,8 @@ import os
 from django.core.management import call_command
 from django.utils.crypto import get_random_string
 from templates import render_template
-
+import sys
+from ansicolors import AnsiColors
 
 class ProjectBuilder(object):
     """
@@ -46,17 +47,24 @@ class ProjectBuilder(object):
         """
             Creates the django project and some templates.
         """
-        
-        call_command("startproject", self.project_name)
-        os.chdir(self.project_name)
 
-        self._create_dir("templates")
-        self._create_dir("templates", "index")
-        self._create_file(self._get_dir("templates", "index", "index.html"), render_template("index.html"))
+        try:
+            self.project
+        except:
+            print AnsiColors.WARNING + "Please provide a project name." + AnsiColors.ENDC
+            print "Usage: start_shopify_app [project_name]"
+            sys.exit()
+        else:       
+            call_command("startproject", self.project_name)
+            os.chdir(self.project_name)
 
-        if self.public_app:
-            self._create_dir("templates", "oauth")
-            self._create_file(self._get_dir("templates", "oauth", "login.html"), render_template("login.html"))
+            self._create_dir("templates")
+            self._create_dir("templates", "index")
+            self._create_file(self._get_dir("templates", "index", "index.html"), render_template("index.html"))
+
+            if self.public_app:
+                self._create_dir("templates", "oauth")
+                self._create_file(self._get_dir("templates", "oauth", "login.html"), render_template("login.html"))
 
     def make_default_app(self):
         """
