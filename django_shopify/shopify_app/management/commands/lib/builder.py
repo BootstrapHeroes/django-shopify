@@ -40,14 +40,22 @@ class ProjectBuilder(object):
         print AnsiColors.WHITEONBLUE + "                                                     " + AnsiColors.ENDC
         print
 
-        self.make_project()
-        self.setup_media()
-        self.make_default_app()
-        
-        self.setup_urls()
-        self.setup_settings()
+        if self.project_name == None:
+            print AnsiColors.WARNING + "Please provide a project name." + AnsiColors.ENDC
+            print "Usage: start_shopify_app [project_name]" + AnsiColors.FAIL
+            print
+            sys.exit()
+        else:  
+            self.make_project()
+            self.setup_media()
+            self.make_default_app()
+            
+            self.setup_urls()
+            self.setup_settings()
 
-        self.go_back_to_main_dir()
+            self.go_back_to_main_dir()
+
+            print AnsiColors.OKGREEN + "Shopify Django app " + AnsiColors.WHITE + self.project_name + AnsiColors.OKGREEN + " created! :)" + AnsiColors.ENDC
 
         print
 
@@ -55,31 +63,25 @@ class ProjectBuilder(object):
         """
             Creates the django project and some templates.
         """
+ 
+        call_command("startproject", self.project_name)
+        os.chdir(self.project_name)
 
-        try:
-            self.project
-        except:
-            print AnsiColors.WARNING + "Please provide a project name." + AnsiColors.ENDC
-            print "Usage: start_shopify_app [project_name]" + AnsiColors.FAIL
-            print
-            sys.exit()
-        else:       
-            call_command("startproject", self.project_name)
-            os.chdir(self.project_name)
+        self._create_dir("templates")
+        self._create_dir("templates", "index")
+        self._create_file(self._get_dir("templates", "index", "index.html"), render_template("index.html"))
 
-            self._create_dir("templates")
-            self._create_dir("templates", "index")
-            self._create_file(self._get_dir("templates", "index", "index.html"), render_template("index.html"))
-
-            if self.public_app:
-                self._create_dir("templates", "oauth")
-                self._create_file(self._get_dir("templates", "oauth", "login.html"), render_template("login.html"))
+        if self.public_app:
+            self._create_dir("templates", "oauth")
+            self._create_file(self._get_dir("templates", "oauth", "login.html"), render_template("login.html"))
 
     def make_default_app(self):
         """
             Creates the django app, the views root folder and some example views.
         """
         
+        print AnsiColors.OKCYAN + "Starting Django app..." + AnsiColors.ENDC
+
         call_command("startapp", self.app_name)
 
         os.remove(self._get_app_dir("views.py"))
@@ -94,6 +96,8 @@ class ProjectBuilder(object):
         """
             Replaces the django default settings.py for a template we provide.
         """
+
+        print AnsiColors.OKCYAN + "Configuring " + AnsiColors.WHITE + "settings.py" + AnsiColors.OKCYAN + "..." + AnsiColors.ENDC
 
         # Create a random SECRET_KEY hash to put it in the main settings.
         chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
@@ -113,6 +117,8 @@ class ProjectBuilder(object):
             Replaces the django default urls.py for a template we provide.
         """
 
+        print AnsiColors.OKCYAN + "Configuring " + AnsiColors.WHITE + "urls.py" + AnsiColors.OKCYAN + "..." + AnsiColors.ENDC
+
         if self.public_app:
             template_name = "urls_public"
         else:
@@ -125,6 +131,8 @@ class ProjectBuilder(object):
         """
             Creates the media folder
         """
+
+        print AnsiColors.OKCYAN + "Creating media folder..." + AnsiColors.ENDC
 
         self._create_dir("media")
         self._create_dir("media", "js")
