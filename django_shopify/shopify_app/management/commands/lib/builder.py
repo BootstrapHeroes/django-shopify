@@ -34,6 +34,12 @@ class ProjectBuilder(object):
             Builds the project structure and create files.
         """
 
+        print
+        print AnsiColors.WHITEONBLUE + "                                                     " + AnsiColors.ENDC
+        print AnsiColors.WHITEONBLUE + "  Django Shopify Core Library - by Bootstrap Heroes  " + AnsiColors.ENDC
+        print AnsiColors.WHITEONBLUE + "                                                     " + AnsiColors.ENDC
+        print
+
         self.make_project()
         self.setup_media()
         self.make_default_app()
@@ -42,6 +48,8 @@ class ProjectBuilder(object):
         self.setup_settings()
 
         self.go_back_to_main_dir()
+
+        print
 
     def make_project(self):
         """
@@ -52,7 +60,8 @@ class ProjectBuilder(object):
             self.project
         except:
             print AnsiColors.WARNING + "Please provide a project name." + AnsiColors.ENDC
-            print "Usage: start_shopify_app [project_name]"
+            print "Usage: start_shopify_app [project_name]" + AnsiColors.FAIL
+            print
             sys.exit()
         else:       
             call_command("startproject", self.project_name)

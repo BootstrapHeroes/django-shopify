@@ -5,6 +5,7 @@ class AnsiColors(object):
     WARNING = '\033[93m'
     FAIL = '\033[91m'
     ENDC = '\033[0m'
+    WHITEONBLUE = '\033[37;44m'
 
     def disable(self):
         self.HEADER = ''
@@ -13,3 +14,4 @@ class AnsiColors(object):
         self.WARNING = ''
         self.FAIL = ''
         self.ENDC = ''
+        self.WHITEONBLUE = ''
