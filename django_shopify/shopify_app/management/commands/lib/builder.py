@@ -1,4 +1,6 @@
 import os
+import distutils.core
+import sys
 
 from django.core.management import call_command
 from django.utils.crypto import get_random_string
@@ -28,6 +30,7 @@ class ProjectBuilder(object):
         self.type = args[1] if len(self.args) > 1 else False
         self.skin = args[2] if len(self.args) > 2 else "default"
         self.public_app = self.type == "public"
+        self.startdir = os.getcwd()
 
     def build(self):
         """
@@ -51,13 +54,21 @@ class ProjectBuilder(object):
         call_command("startproject", self.project_name)
         os.chdir(self.project_name)
 
+        skin_templates_dir = os.path.join(self.startdir, self.skin, "templates")
+
         self._create_dir("templates")
         self._create_dir("templates", "index")
-        self._create_file(self._get_dir("templates", "index", "index.html"), render_template("index.html"))
+        if (self.skin == "default"):
+            self._create_file(self._get_dir("templates", "index", "index.html"), render_template("index.html"))
+        else:
+            self._create_file(self._get_dir("templates", "index", "index.html"), render_template("index.html", None, skin_templates_dir))
 
         if self.public_app:
             self._create_dir("templates", "oauth")
-            self._create_file(self._get_dir("templates", "oauth", "login.html"), render_template("login.html"))
+            if (self.skin == "default"):
+                self._create_file(self._get_dir("templates", "oauth", "login.html"), render_template("login.html"))
+            else:
+                self._create_file(self._get_dir("templates", "oauth", "login.html"), render_template("login.html", None, skin_templates_dir))
 
     def make_default_app(self):
         """
@@ -110,10 +121,15 @@ class ProjectBuilder(object):
             Creates the media folder
         """
 
-        self._create_dir("media")
-        self._create_dir("media", "js")
-        self._create_dir("media", "css")
-        self._create_dir("media", "img")
+        if (self.skin == "default"):
+            self._create_dir("media")
+            self._create_dir("media", "js")
+            self._create_dir("media", "css")
+            self._create_dir("media", "img")
+        else:
+            fromDirectory = os.path.join(self.startdir, self.skin, "media")
+            toDirectory = os.path.join(self.startdir, self.project_name, "media")
+            distutils.dir_util.copy_tree(fromDirectory, toDirectory)
 
     def go_back_to_main_dir(self):
         """
