@@ -3,7 +3,6 @@ from optparse import make_option
 
 from lib.builder import ProjectBuilder
 
-
 class Command(BaseCommand):
 
     def handle(self, *args, **options):

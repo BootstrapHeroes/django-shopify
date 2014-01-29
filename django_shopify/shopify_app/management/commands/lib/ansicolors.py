@@ -1,0 +1,21 @@
+class AnsiColors(object):
+    HEADER = '\033[95m'
+    OKCYAN = '\033[36m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    WHITEONBLUE = '\033[37;44m'
+    WHITE = '\033[37m'
+
+    def disable(self):
+        self.HEADER = ''
+        self.OKCYAN = ''
+        self.OKBLUE = ''
+        self.OKGREEN = ''
+        self.WARNING = ''
+        self.FAIL = ''
+        self.ENDC = ''
+        self.WHITEONBLUE = ''
+        self.WHITE = ''
