@@ -1,13 +1,13 @@
 from base import BaseService
 
 from shopify_app.models import Shop
-from shopify_app.utils.python import normalize_url
 
 from shopify_service import ShopifyService
 from config_service import ConfigService
 from plan_service import PlanService
 from plan_config_service import PlanConfigService
 from datetime import datetime
+
 
 class ShopService(BaseService):
 
@@ -21,17 +21,17 @@ class ShopService(BaseService):
             all the shopify API shop attributes.
         """
 
-        self.before_install(request)        
+        self.before_install(request)
 
         token = request.session.get('shopify', {}).get("access_token")
-        domain = request.session.get('shopify', {}).get("shop_url")        
+        domain = request.session.get('shopify', {}).get("shop_url")
 
         shopify_service = ShopifyService(token=token, domain=domain)
         shop = shopify_service.Shop.current()
         shop_model, created = self.get_or_create(shop_id=shop.id)
 
         for field in shop_model.update_fields():
-            setattr(shop_model, field, shop.attributes.get(field))        
+            setattr(shop_model, field, shop.attributes.get(field))
 
         shop_model.token = token
 
@@ -43,13 +43,14 @@ class ShopService(BaseService):
         if not self._check_active_plan(shop_model):
             redirect_url = self.get_upgrade_plan_url(shopify_service, shop_model)
 
+        request.session["shop"] = shop_model
         self.post_install(request)
 
         return shop_model, redirect_url
 
     def _check_active_plan(self, shop):
         """
-            This method checks if the given shop has an active plan 
+            This method checks if the given shop has an active plan
             and return a boolean with the result
         """
         #Check if the payments are disabled, so in this case the plan is active (doesnt need one)
@@ -60,9 +61,8 @@ class ShopService(BaseService):
         current_plan = shop.current_plan()
         if not current_plan:
             return False
-        
-        return PlanService().is_active_plan(current_plan)
 
+        return PlanService().is_active_plan(current_plan)
 
     def before_save(self, shop_model, request):
         """
