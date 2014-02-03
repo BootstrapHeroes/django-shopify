@@ -3,7 +3,7 @@ import os
 from setuptools import setup, find_packages
 
 #from djangp_shopify import __version__
-__version__ = "0.0.4"
+__version__ = "0.0.5"
 
 
 __dir__ = os.path.dirname(os.path.abspath(__file__))
