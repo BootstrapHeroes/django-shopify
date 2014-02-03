@@ -22,11 +22,12 @@ class PreferencesView(BaseShopView):
     """
         Main View to access the shop account
     """
-    
-    @shop_login_required    
+
+    @shop_login_required
     def get(self, *args, **kwargs):
 
         shop, redirect_url = self.service.install(self.request)
+        self.request.session["shopipy"] = shop
 
         if not redirect_url:
             redirect_url = getattr(settings, "OAUTH_REDIRECT_URL", DEFAULTS["OAUTH_REDIRECT_URL"])
@@ -39,13 +40,13 @@ class BillingView(BaseShopView):
         Return handler for when a user accepts the billing plan for the app
     """
 
-    @shop_login_required    
+    @shop_login_required
     def get(self, *args, **kwargs):
 
         shop_id = self.request.GET.get("shop")
         plan_config_id = self.request.GET.get("plan_config")
         charge_id = self.request.GET.get("charge_id")
-        
+
         ShopService().upgrade_plan(shop_id, plan_config_id, charge_id)
 
         return self.redirect(getattr(settings, "BILLING_REDIRECT_URL", DEFAULTS["BILLING_REDIRECT_URL"]))

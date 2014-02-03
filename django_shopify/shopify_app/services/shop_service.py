@@ -43,7 +43,6 @@ class ShopService(BaseService):
         if not self._check_active_plan(shop_model):
             redirect_url = self.get_upgrade_plan_url(shopify_service, shop_model)
 
-        request.session["shop"] = shop_model
         self.post_install(request)
 
         return shop_model, redirect_url

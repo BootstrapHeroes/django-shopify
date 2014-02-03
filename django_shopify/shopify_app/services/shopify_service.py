@@ -10,7 +10,7 @@ class ShopifyService(object):
     public_app = False
 
     def __new__(cls, *args, **kwargs):
-        """ 
+        """
             Singleton class
         """
         if not hasattr(cls, "_instance"):
@@ -20,7 +20,7 @@ class ShopifyService(object):
     def _init_public_app(self, token, domain):
         """
             Initializes the shopify api client with the key of the shop
-        """        
+        """
 
         try:
             session = shopify.Session(domain)
@@ -51,7 +51,7 @@ class ShopifyService(object):
     def __init__(self, token=None, domain=None, shop=None):
 
         if getattr(settings, "PUBLIC_APP", False) or self.public_app:
-            
+
             if shop:
                 token = shop.token
                 domain = shop.myshopify_domain

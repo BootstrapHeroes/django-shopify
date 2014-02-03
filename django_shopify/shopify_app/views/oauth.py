@@ -10,7 +10,7 @@ class BaseOauthView(BaseView):
     """
         Base class of Aouth Flow Views. Provides common methods
     """
-    
+
     def _return_address(self, request):
         """
             Return the return address stored on session or default
