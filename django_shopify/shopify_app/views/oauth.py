@@ -1,8 +1,7 @@
 from base import BaseView
+from shopify_app.config import DEFAULTS
 from django.conf import settings
-from django.shortcuts import render_to_response, redirect
-from django.template import RequestContext, Context
-from django.core.urlresolvers import reverse
+
 import shopify
 
 
@@ -12,15 +11,13 @@ class BaseOauthView(BaseView):
     """
 
     def _return_address(self, request):
-        """
-            Return the return address stored on session or default
-        """
-        return request.session.pop('return_to', "/shop")
+
+        return getattr(settings, "PREFERENCES_URL", DEFAULTS["PREFERENCES_URL"])
 
 
 class LoginView(BaseOauthView):
     """
-        Initial login action which ask user for their ${shop}.myshopify.com address and redirect user to shopify auth page
+        Initial login action which ask user for their ${shop}.myshopify.com address and self.redirect user to shopify auth page
     """
 
     def get(self, *args, **kwargs):
@@ -29,7 +26,7 @@ class LoginView(BaseOauthView):
         if self.request.REQUEST.get('shop'):
             shop = self.request.REQUEST.get('shop').strip()
             permission_url = shopify.Session.create_permission_url(shop, settings.SHOPIFY_API_SCOPE)
-            return redirect(permission_url)
+            return self.redirect(permission_url)
 
         return super(BaseOauthView, self).get(*args, **kwargs)
 
@@ -45,22 +42,20 @@ class FinalizeView(BaseOauthView):
 
         # Checking if the user has a previous valid session initialized, not need to initialize again
         if hasattr(self.request, 'session') and 'shopify' in self.request.session and self.request.session["shopify"]["shop_url"] == shop_url:
-            return redirect("/shop")
+            return self.redirect("/shop")
 
         # Initializing shopify session
         try:
             shopify_session = shopify.Session(shop_url)
             shopify_session.request_token(self.request.GET["code"])
         except:
-            #Shopify session fails, redirect to login initial step
-            return redirect("%s?shop=%s"%("/oauth/login", shop_url))
-
+            #Shopify session fails, self.redirect to login initial step
+            return self.redirect("%s?shop=%s" % ("/oauth/login", shop_url))
 
         # Store shopify sesssion data in our session
         self.request.session['shopify'] = {
-                    "shop_url": shop_url,
-                    "access_token": shopify_session.token,
-                }
+            "shop_url": shop_url,
+            "access_token": shopify_session.token,
+        }
 
-        response = redirect(self._return_address(self.request))
-        return response
+        return self.redirect(self._return_address(self.request))

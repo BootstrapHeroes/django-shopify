@@ -15,7 +15,7 @@ class IndexView(BaseShopView):
 
     def get(self, *args, **kwargs):
 
-        return self.redirect("/shop/preferences")
+        return self.redirect("/shop/preferences/")
 
 
 class PreferencesView(BaseShopView):
