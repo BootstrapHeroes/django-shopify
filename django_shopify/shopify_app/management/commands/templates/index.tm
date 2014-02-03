@@ -1,4 +1,5 @@
 from shopify_app.views.base import BaseView
+from shopify_app.services import ShopifyService
 
 
 class IndexView(BaseView):

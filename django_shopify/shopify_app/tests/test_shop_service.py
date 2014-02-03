@@ -30,14 +30,14 @@ class RequestMock(RequestFactory):
 class ShopServiceTest(TestCase):
 
     config_service = ConfigService()
-    shopify_service = ShopifyService()
+    shopify_service = ShopifyService(token=settings.SHOPIFY_TEST_PASSWORD, domain=settings.SHOPIFY_TEST_HOST)
 
     def setUp(self):
 
         self.request = RequestMock()
         self.request.session["shopify"] = {
-            "access_token": "c9ea03feb20b5aab04c95f421e0c96be",
-            "shop_url": "http://sticky-local.myshopify.com",
+            "access_token": settings.SHOPIFY_TEST_PASSWORD,
+            "shop_url": settings.SHOPIFY_TEST_HOST,
         }
 
         self.shopify_service.public_app = True

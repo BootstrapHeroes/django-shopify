@@ -168,4 +168,4 @@ PUBLIC_APP = True
 #Shopify config vars. Docs at https://github.com/SocalProofit/django-shopify/wiki/Shopify-Service
 SHOPIFY_API_KEY = "c5eb564c69e9c052a18f42953ff42579" #Your shopify API key
 SHOPIFY_API_SECRET = "24da92db4941dc2b790174325614d696" #Your shopify API secret
-SHOPIFY_API_SCOPE = ["read_orders"] #Your shopify API scopes
+SHOPIFY_API_SCOPE = ["write_orders", "write_products", "write_customers"] #Your shopify API scopes
