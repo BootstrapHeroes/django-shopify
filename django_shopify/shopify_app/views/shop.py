@@ -27,7 +27,7 @@ class PreferencesView(BaseShopView):
     def get(self, *args, **kwargs):
 
         shop, redirect_url = self.service.install(self.request)
-        self.request.session["shopipy"] = shop
+        self.request.session["shop"] = shop
 
         if not redirect_url:
             redirect_url = getattr(settings, "OAUTH_REDIRECT_URL", DEFAULTS["OAUTH_REDIRECT_URL"])
