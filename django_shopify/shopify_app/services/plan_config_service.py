@@ -4,6 +4,7 @@ from django.conf import settings
 from shopify_app.config import DEFAULTS
 from datetime import datetime
 
+
 class PlanConfigService(BaseService):
 
     entity = PlanConfig
@@ -12,11 +13,10 @@ class PlanConfigService(BaseService):
         """
             Returns the common data for the charge API call
         """
-
         data = {
             "name": plan_config.name if plan_config.name else "Default",
-            "price": plan_config.billing_amount if plan_config.billing_amount else "10.0",            
-            "return_url": "%s/shop/billing/?shop=%s&plan_config=%s" % (getattr(settings, "HOST", DEFAULTS["HOST"]), shop.id, plan_config.id),
+            "price": plan_config.billing_amount if plan_config.billing_amount else "10.0",
+            "return_url": "http:%s/shop/billing/?shop=%s&plan_config=%s" % (getattr(settings, "HOST", DEFAULTS["HOST"]), shop.id, plan_config.id),
         }
 
         if getattr(settings, "TEST", True):
@@ -56,13 +56,12 @@ class PlanConfigService(BaseService):
             If there are errors in the request response it raises an exception.
         """
 
-    	if plan_config.billing_type == "O":
+        if plan_config.billing_type == "O":
             response = self.one_time_charge(shopify_service, shop, plan_config)
         else:
             response = self.recurring_charge(shopify_service, shop, plan_config)
 
         response_data = response.to_dict()
-
 
         if response.errors.errors:
             raise Exception(str(response.errors.errors))

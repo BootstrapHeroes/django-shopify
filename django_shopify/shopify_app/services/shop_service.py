@@ -99,6 +99,10 @@ class ShopService(BaseService):
 
         return response_data["confirmation_url"]
 
+    def find_app_charge(self, attr, shop_model, charge_id):
+
+        return getattr(ShopifyService(shop=shop_model), attr).find(charge_id)
+
     def upgrade_plan(self, shop_id, plan_config_id, charge_id):
         """
             Upgrades the plan for the current [shop_id] using the [plan_config_id].
@@ -107,17 +111,23 @@ class ShopService(BaseService):
 
         shop_model = self.get(id=shop_id)
 
+        plan_config = PlanConfigService().get(id=plan_config_id)
+
         #Activate the charge via the api
-        charge = ShopifyService(shop=shop_model).RecurringApplicationCharge.find(charge_id)
+        if plan_config.billing_type == "O":
+            api_object = "ApplicationCharge"
+        else:
+            api_object = "RecurringApplicationCharge"
+
+        charge = self.find_app_charge(api_object, shop_model, charge_id)
         charge.activate()
 
         #Check if the chargs is already activated
-        charge = ShopifyService(shop=shop_model).RecurringApplicationCharge.find(charge_id)
+        charge = self.find_app_charge(api_object, shop_model, charge_id)
 
         if charge.status == "active":
 
             plan = PlanService().new(shop=shop_model)
-            plan_config = PlanConfigService().get(id=plan_config_id)
 
             #copies all the attributes from the plan_config to the plan model
             for field in plan_config.update_fields():
