@@ -122,7 +122,7 @@ class ShopService(BaseService):
         if plan_config.billing_type == "O":
             api_object = "application_charges"
         else:
-            api_object = "application_recurring_charges"
+            api_object = "recurring_application_charges"
 
         charge = self.find_app_charge(api_object, shop_model, charge_id)
         #charge.activate()
