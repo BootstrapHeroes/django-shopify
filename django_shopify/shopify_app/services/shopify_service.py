@@ -1,6 +1,8 @@
 import shopify
+
 from django.conf import settings
 
+from shopify_api import APIWrapper
 from shopify_app.utils.python import normalize_url
 
 
@@ -14,7 +16,7 @@ class ShopifyService(object):
             Singleton class
         """
         if not hasattr(cls, "_instance"):
-            cls._instance = super(ShopifyService, cls).__new__(cls, *args, **kwargs)
+            cls._instance = super(ShopifyService, cls).__new__(cls)
         return cls._instance
 
     def _init_public_app(self, token, domain):
@@ -63,6 +65,7 @@ class ShopifyService(object):
 
         shopify.ShopifyResource.activate_session(session)
         self.session = session
+        self.shop = shop
 
     def __getattr__(self, name):
         """
@@ -73,10 +76,12 @@ class ShopifyService(object):
 
     def is_active_charge(self, charge_id):
 
-        charge = shopify.ApplicationCharge.find(charge_id)
-        return charge and charge.status == "active"
+        #charge = shopify.ApplicationCharge.find(charge_id)
+        charge = APIWrapper(self.shop).get("application_charges", {"id": charge_id})
+        return charge and charge["status"] == "active"
 
     def is_active_recurring_charge(self, charge_id):
 
-        charge = shopify.RecurringApplicationCharge.find(charge_id)
-        return charge and charge.status == "active"
+        #charge = shopify.RecurringApplicationCharge.find(charge_id)
+        charge = APIWrapper(self.shop).get("application_recurring_charges", {"id": charge_id})
+        return charge and charge["status"] == "active"

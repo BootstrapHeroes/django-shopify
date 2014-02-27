@@ -5,6 +5,7 @@ from shopify_app.models import Shop
 from shopify_service import ShopifyService
 from config_service import ConfigService
 from plan_service import PlanService
+from shopify_api import APIWrapper
 from plan_config_service import PlanConfigService
 from datetime import datetime
 
@@ -99,33 +100,38 @@ class ShopService(BaseService):
 
         return response_data["confirmation_url"]
 
-    def find_app_charge(self, attr, shop_model, charge_id):
+    def find_app_charge(self, entity, shop_model, charge_id):
 
-        return getattr(ShopifyService(shop=shop_model), attr).find(charge_id)
+        return APIWrapper(shop_model).get(entity, {"id": charge_id})
+        #return getattr(ShopifyService(shop=shop_model), attr).find(charge_id)
+
+    def activate_charge(self, entity, shop_model, charge_id):
+
+        APIWrapper(shop_model).activate_charge(entity, charge_id)
 
     def upgrade_plan(self, shop_id, plan_config_id, charge_id):
         """
             Upgrades the plan for the current [shop_id] using the [plan_config_id].
             It also saved the [charge_id] on the plan model.
         """
-
         shop_model = self.get(id=shop_id)
 
         plan_config = PlanConfigService().get(id=plan_config_id)
 
         #Activate the charge via the api
         if plan_config.billing_type == "O":
-            api_object = "ApplicationCharge"
+            api_object = "application_charges"
         else:
-            api_object = "RecurringApplicationCharge"
+            api_object = "application_recurring_charges"
 
         charge = self.find_app_charge(api_object, shop_model, charge_id)
-        charge.activate()
+        #charge.activate()
+        self.activate_charge(api_object, shop_model, charge["id"])
 
         #Check if the chargs is already activated
         charge = self.find_app_charge(api_object, shop_model, charge_id)
 
-        if charge.status == "active":
+        if charge["status"] == "active":
 
             plan = PlanService().new(shop=shop_model)
 
