@@ -115,20 +115,17 @@ class ShopService(BaseService):
             It also saved the [charge_id] on the plan model.
         """
         shop_model = self.get(id=shop_id)
-
         plan_config = PlanConfigService().get(id=plan_config_id)
 
-        #Activate the charge via the api
-        if plan_config.billing_type == "O":
-            api_object = "application_charges"
-        else:
-            api_object = "recurring_application_charges"
-
+        api_object = "application_charges" if plan_config.billing_type == "O" else "recurring_application_charges"
         charge = self.find_app_charge(api_object, shop_model, charge_id)
-        #charge.activate()
-        self.activate_charge(api_object, shop_model, charge["id"])
 
-        #Check if the chargs is already activated
+        if charge["status"] == "accepted":
+            self.activate_charge(api_object, shop_model, charge["id"])
+        elif charge["status"] == "declined":
+            return False
+
+        #Check if the charge is already activated
         charge = self.find_app_charge(api_object, shop_model, charge_id)
 
         if charge["status"] == "active":
@@ -142,3 +139,7 @@ class ShopService(BaseService):
             plan.charge_id = charge_id
             plan.installed_at = datetime.utcnow()
             plan.save()
+        else:
+            return False
+
+        return True

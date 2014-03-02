@@ -47,6 +47,7 @@ class BillingView(BaseShopView):
         plan_config_id = self.request.GET.get("plan_config")
         charge_id = self.request.GET.get("charge_id")
 
-        ShopService().upgrade_plan(shop_id, plan_config_id, charge_id)
+        if not ShopService().upgrade_plan(shop_id, plan_config_id, charge_id):
+            return self.redirect(getattr(settings, "BILLING_DECLINE_REDIRECT_URL", DEFAULTS["BILLING_DECLINE_REDIRECT_URL"]))
 
         return self.redirect(getattr(settings, "BILLING_REDIRECT_URL", DEFAULTS["BILLING_REDIRECT_URL"]))
