@@ -2,6 +2,8 @@ from base import BaseView
 from shopify_app.config import DEFAULTS
 from django.conf import settings
 
+from shopify_app.services.log_service import LogService
+
 import shopify
 
 
@@ -22,6 +24,8 @@ class LoginView(BaseOauthView):
 
     def get(self, *args, **kwargs):
 
+        LogService().log_request(self.request)
+
         #If the ${shop}.myshopify.com address is already provided in the URL, just skip to authenticate
         if self.request.REQUEST.get('shop'):
             shop = self.request.REQUEST.get('shop').strip()
@@ -37,6 +41,8 @@ class FinalizeView(BaseOauthView):
     """
 
     def get(self, *args, **kwargs):
+
+        LogService().log_request(self.request)
 
         shop_url = self.request.REQUEST.get('shop')
 

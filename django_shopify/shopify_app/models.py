@@ -134,3 +134,10 @@ class Config(BaseEntity):
     def __unicode__(self):
 
         return "{0}".format(self.id)
+
+
+class RequestLog(BaseEntity):
+
+    url = models.CharField(max_length=4000)
+    params = models.CharField(max_length=4000)
+    headers = models.CharField(max_length=4000)

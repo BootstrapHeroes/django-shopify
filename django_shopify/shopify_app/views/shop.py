@@ -4,6 +4,7 @@ from shopify_app.config import DEFAULTS
 
 from shopify_app.decorators import shop_login_required
 from shopify_app.services.shop_service import ShopService
+from shopify_app.services.log_service import LogService
 
 
 class BaseShopView(BaseView):
@@ -26,6 +27,8 @@ class PreferencesView(BaseShopView):
     @shop_login_required
     def get(self, *args, **kwargs):
 
+        LogService().log_request(self.request)
+
         shop, redirect_url = self.service.install(self.request)
         self.request.session["shop"] = shop
 
@@ -42,6 +45,8 @@ class BillingView(BaseShopView):
 
     @shop_login_required
     def get(self, *args, **kwargs):
+
+        LogService().log_request(self.request)
 
         shop_id = self.request.GET.get("shop")
         plan_config_id = self.request.GET.get("plan_config")
