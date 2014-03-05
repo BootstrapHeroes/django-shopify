@@ -4,6 +4,8 @@ from django.conf import settings
 from shopify_app.config import DEFAULTS
 from datetime import datetime
 
+from log_service import LogService
+
 
 class PlanConfigService(BaseService):
 
@@ -15,7 +17,7 @@ class PlanConfigService(BaseService):
         """
         data = {
             "name": plan_config.name if plan_config.name else "Default",
-            "price": plan_config.billing_amount if plan_config.billing_amount else "10.0",
+            "price": str(plan_config.billing_amount) if plan_config.billing_amount else "10.0",
             "return_url": "http:%s/shop/billing/?shop=%s&plan_config=%s" % (getattr(settings, "HOST", DEFAULTS["HOST"]), shop.id, plan_config.id),
         }
 
@@ -57,11 +59,15 @@ class PlanConfigService(BaseService):
         """
 
         if plan_config.billing_type == "O":
+            api_entity = "/application_charges/"
             response = self.one_time_charge(shopify_service, shop, plan_config)
         else:
+            api_entity = "/recurring_application_charges/"
             response = self.recurring_charge(shopify_service, shop, plan_config)
 
         response_data = response.to_dict()
+
+        LogService().log_shopify_request(api_entity, method="post", response=str(response))
 
         if response.errors.errors:
             raise Exception(str(response.errors.errors))

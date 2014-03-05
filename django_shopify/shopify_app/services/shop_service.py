@@ -5,6 +5,7 @@ from shopify_app.models import Shop
 from shopify_service import ShopifyService
 from config_service import ConfigService
 from plan_service import PlanService
+from log_service import LogService
 from shopify_api import APIWrapper
 from plan_config_service import PlanConfigService
 from datetime import datetime
@@ -43,6 +44,8 @@ class ShopService(BaseService):
         redirect_url = False
         if not self._check_active_plan(shop_model):
             redirect_url = self.get_upgrade_plan_url(shopify_service, shop_model)
+
+            LogService().log_shopify_request(redirect_url)
 
         self.post_install(request)
 
@@ -102,12 +105,11 @@ class ShopService(BaseService):
 
     def find_app_charge(self, entity, shop_model, charge_id):
 
-        return APIWrapper(shop_model).get(entity, {"id": charge_id})
-        #return getattr(ShopifyService(shop=shop_model), attr).find(charge_id)
+        return APIWrapper(shop_model, log=True).get(entity, {"id": charge_id})
 
     def activate_charge(self, entity, shop_model, charge_id):
 
-        APIWrapper(shop_model).activate_charge(entity, charge_id)
+        APIWrapper(shop_model, log=True).activate_charge(entity, charge_id)
 
     def upgrade_plan(self, shop_id, plan_config_id, charge_id):
         """

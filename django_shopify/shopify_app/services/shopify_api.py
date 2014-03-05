@@ -1,13 +1,16 @@
 import requests
 import simplejson as json
 
+from log_service import LogService
+
 
 class APIWrapper(object):
 
-    def __init__(self, shop):
+    def __init__(self, shop, log=False):
 
         self.shop = shop
         self.api_domain = "https://%s/admin" % self.shop.myshopify_domain
+        self.log = log
 
         self.params = {
             "headers": {
@@ -23,18 +26,29 @@ class APIWrapper(object):
         except:
             return
 
+    def _make_request(self, url, method, params):
+
+        response = getattr(requests, method)(url, **params)
+
+        if self.log:
+            LogService().log_shopify_request(url, method=method, params=params, response=response.text)
+
+        return response
+
     def create(self, entity, data):
 
-        self.params["data"] = json.dumps(data)
+        params = self.params.copy()
+        params["data"] = json.dumps(data)
+
         url = "%s/%s.json" % (self.api_domain, entity)
-        response = requests.post(url, **self.params)
+        response = self._make_request(url, "post", params)
 
         return self._decode_response(response)
 
     def search(self, entity, filters):
 
         url = "%s/%s/search.json?query=%s" % (self.api_domain, entity, filters)
-        response = requests.get(url, **self.params)
+        response = self._make_request(url, "get", self.params)
 
         decoded_response = self._decode_response(response)
         if decoded_response is not None:
@@ -43,7 +57,7 @@ class APIWrapper(object):
     def find(self, entity, filters):
 
         url = "%s/%s.json?%s" % (self.api_domain, entity, filters)
-        response = requests.get(url, **self.params)
+        response = self._make_request(url, "get", self.params)
 
         response = self._decode_response(response)
         if entity in response:
@@ -61,6 +75,6 @@ class APIWrapper(object):
     def activate_charge(self, entity, charge_id):
 
         url = "%s/%s/%s/activate.json" % (self.api_domain, entity, charge_id)
+        response = self._make_request(url, "post", self.params)
 
-        response = requests.post(url, **self.params)
         return self._decode_response(response)

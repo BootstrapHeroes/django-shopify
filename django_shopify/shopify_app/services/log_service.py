@@ -22,7 +22,7 @@ class LogService(BaseService):
         log = self.new(**data)      
         log.save()
 
-    def log_shopify_request(self, url, response=None):
+    def log_shopify_request(self, url, method="get", params=None, response=None):
 
         data = {
             "url": url,
@@ -30,6 +30,12 @@ class LogService(BaseService):
 
         if response:
             data["response"] = response
+
+        if params:
+            if method == "get":
+                params["get"] = str(params) 
+            else:
+                params["post"] = str(params)
 
         log = self.new(**data)      
         log.save()
