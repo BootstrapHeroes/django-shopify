@@ -30,6 +30,9 @@ class LoginView(BaseOauthView):
         if self.request.REQUEST.get('shop'):
             shop = self.request.REQUEST.get('shop').strip()
             permission_url = shopify.Session.create_permission_url(shop, settings.SHOPIFY_API_SCOPE)
+            
+            LogService().log_shopify_request(permission_url)
+
             return self.redirect(permission_url)
 
         return super(BaseOauthView, self).get(*args, **kwargs)

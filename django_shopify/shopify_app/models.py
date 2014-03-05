@@ -138,6 +138,10 @@ class Config(BaseEntity):
 
 class RequestLog(BaseEntity):
 
-    url = models.CharField(max_length=4000)
-    params = models.CharField(max_length=4000)
-    headers = models.CharField(max_length=4000)
+    url = models.CharField(max_length=1000, null=True, blank=True)
+    headers = models.TextField(null=True, blank=True)
+    payload = models.TextField(null=True, blank=True)
+    get = models.TextField(null=True, blank=True)
+    post = models.TextField(null=True, blank=True)
+
+    response = models.TextField(null=True, blank=True)
