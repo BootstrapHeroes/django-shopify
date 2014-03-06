@@ -28,12 +28,11 @@ class ShopService(BaseService):
         token = request.session.get('shopify', {}).get("access_token")
         domain = request.session.get('shopify', {}).get("shop_url")
 
-        shopify_service = ShopifyService(token=token, domain=domain)
-        shop = shopify_service.Shop.current()
-        shop_model, created = self.get_or_create(shop_id=shop.id)
+        shop = APIWrapper(token=token, api_domain=domain, log=True).current_shop()
+        shop_model, created = self.get_or_create(shop_id=shop["id"])
 
         for field in shop_model.update_fields():
-            setattr(shop_model, field, shop.attributes.get(field))
+            setattr(shop_model, field, shop.get(field))
 
         shop_model.token = token
 
@@ -43,7 +42,7 @@ class ShopService(BaseService):
 
         redirect_url = False
         if not self._check_active_plan(shop_model):
-            redirect_url = self.get_upgrade_plan_url(shopify_service, shop_model)
+            redirect_url = self.get_upgrade_plan_url(shop_model)
 
             LogService().log_shopify_request(redirect_url)
 
@@ -88,7 +87,7 @@ class ShopService(BaseService):
 
         pass
 
-    def get_upgrade_plan_url(self, shopify_service, shop):
+    def get_upgrade_plan_url(self, shop):
         """
             Creates the shop plan and returns the confirmation url where
             the user should accept the billing.
@@ -99,7 +98,7 @@ class ShopService(BaseService):
 
         config = ConfigService().get_config()
         plan_config = config.plan_config
-        response_data = PlanConfigService().confirm_data(shopify_service, shop, plan_config)
+        response_data = PlanConfigService().confirm_data(shop, plan_config)
 
         return response_data["confirmation_url"]
 

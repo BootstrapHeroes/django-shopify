@@ -65,7 +65,7 @@ class Shop(BaseEntity):
     timezone = models.CharField(max_length=255, null=True, blank=True)
     zip = models.CharField(max_length=255, null=True, blank=True)
 
-    NOT_IN_FIELDS = ["id", "created_at", "updated_at", "shop_id", "token"]    
+    NOT_IN_FIELDS = ["id", "created_at", "updated_at", "shop_id", "token"]
 
     def current_plan(self):
 
@@ -109,7 +109,7 @@ class PlanConfig(PlanAttributes):
     """
         Represents the payments configuration for bill shops
     """
-    NOT_IN_FIELDS = ["id", "created_at", "updated_at"]    
+    NOT_IN_FIELDS = ["id", "created_at", "updated_at"]
 
 
 class Plan(PlanAttributes):
@@ -128,7 +128,7 @@ class Config(BaseEntity):
         Represents the payment configuration for all shops specified by the admin.
     """
     enable_billing = models.BooleanField(default=False)
-        
+
     plan_config = models.OneToOneField("PlanConfig", null=True, blank=True)
 
     def __unicode__(self):
@@ -140,8 +140,8 @@ class RequestLog(BaseEntity):
 
     url = models.CharField(max_length=1000, null=True, blank=True)
     headers = models.TextField(null=True, blank=True)
+    method = models.CharField(max_length=20, null=True, blank=True)
     payload = models.TextField(null=True, blank=True)
-    get = models.TextField(null=True, blank=True)
-    post = models.TextField(null=True, blank=True)
+    params = models.TextField(null=True, blank=True)
 
     response = models.TextField(null=True, blank=True)
