@@ -3,8 +3,7 @@ from shopify_app.models import PlanConfig
 from django.conf import settings
 from shopify_app.config import DEFAULTS
 from datetime import datetime
-
-from log_service import LogService
+from shopify_api import APIWrapper
 
 
 class PlanConfigService(BaseService):
@@ -26,16 +25,20 @@ class PlanConfigService(BaseService):
 
         return data
 
-    def one_time_charge(self, shopify_service, shop, plan_config):
+    def _create_charge(self, shop_model, api_entity, data):
+
+        return APIWrapper(shop_model, log=True).create(api_entity, data)
+
+    def one_time_charge(self, shop, plan_config):
         """
             Generates a one time charge for this app
         """
 
         data = self._get_charge_common_data(shop, plan_config)
 
-        return shopify_service.ApplicationCharge.create(data)
+        return self._create_charge(shop, "application_charge", data)
 
-    def recurring_charge(self, shopify_service, shop, plan_config):
+    def recurring_charge(self, shop, plan_config):
         """
             Generates a recurring charge for this app
         """
@@ -48,9 +51,9 @@ class PlanConfigService(BaseService):
         if not current_trial_days >= default_trial_days:
             data["trial_days"] = default_trial_days - current_trial_days
 
-        return shopify_service.RecurringApplicationCharge.create(data)
+        return self._create_charge(shop, "recurring_application_charge", data)
 
-    def confirm_data(self, shopify_service, shop, plan_config):
+    def confirm_data(self, shop, plan_config):
         """
             Makes the request to Generate either a one time charge or recurring charge and
             returns the response results.
@@ -59,17 +62,11 @@ class PlanConfigService(BaseService):
         """
 
         if plan_config.billing_type == "O":
-            api_entity = "/application_charges/"
-            response = self.one_time_charge(shopify_service, shop, plan_config)
+            response = self.one_time_charge(shop, plan_config)
         else:
-            api_entity = "/recurring_application_charges/"
-            response = self.recurring_charge(shopify_service, shop, plan_config)
+            response = self.recurring_charge(shop, plan_config)
 
-        response_data = response.to_dict()
+        if "errors" in response:
+            raise Exception(str(response["errors"]))
 
-        LogService().log_shopify_request(api_entity, method="post", response=str(response))
-
-        if response.errors.errors:
-            raise Exception(str(response.errors.errors))
-
-        return response_data
+        return response

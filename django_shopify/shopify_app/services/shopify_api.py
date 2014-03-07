@@ -3,18 +3,23 @@ import simplejson as json
 
 from log_service import LogService
 
+from django.conf import settings
+
 
 class APIWrapper(object):
 
-    def __init__(self, shop, log=False):
+    def __init__(self, shop=None, token=None, api_domain=None, log=False):
 
-        self.shop = shop
-        self.api_domain = "https://%s/admin" % self.shop.myshopify_domain
+        if shop is not None:
+            token = shop.token
+            api_domain = shop.myshopify_domain
+
+        self.api_domain = "https://%s/admin" % api_domain
         self.log = log
 
         self.params = {
             "headers": {
-                'X-Shopify-Access-Token': shop.token,
+                'X-Shopify-Access-Token': token,
                 'Content-type': 'application/json',
             }
         }
@@ -30,29 +35,42 @@ class APIWrapper(object):
 
         response = getattr(requests, method)(url, **params)
 
-        if self.log:
+        if self.log and getattr(settings, "LOG_SHOPIFY_API_REQUESTS", False):
             LogService().log_shopify_request(url, method=method, params=params, response=response.text)
 
         return response
 
+    def _pluralize_entity(self, entity):
+
+        if not entity.endswith("s"):
+            return "%ss" % entity
+        return entity
+
+    def _return_entity(self, response, entity):
+
+        decoded_response = self._decode_response(response)
+
+        if decoded_response is not None:
+            return decoded_response.get(entity)
+
     def create(self, entity, data):
 
         params = self.params.copy()
-        params["data"] = json.dumps(data)
+        params["data"] = json.dumps({entity: data})
 
-        url = "%s/%s.json" % (self.api_domain, entity)
+        pluralized_entity = self._pluralize_entity(entity)
+
+        url = "%s/%s.json" % (self.api_domain, pluralized_entity)
         response = self._make_request(url, "post", params)
 
-        return self._decode_response(response)
+        return self._return_entity(response, entity)
 
     def search(self, entity, filters):
 
         url = "%s/%s/search.json?query=%s" % (self.api_domain, entity, filters)
         response = self._make_request(url, "get", self.params)
 
-        decoded_response = self._decode_response(response)
-        if decoded_response is not None:
-            return decoded_response[entity]
+        return self._return_entity(response, entity)
 
     def find(self, entity, filters):
 
@@ -78,3 +96,10 @@ class APIWrapper(object):
         response = self._make_request(url, "post", self.params)
 
         return self._decode_response(response)
+
+    def current_shop(self):
+
+        url = "%s/shop.json" % (self.api_domain, )
+        response = self._make_request(url, "get", self.params)
+
+        return self._return_entity(response, "shop")

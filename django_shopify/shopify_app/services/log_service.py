@@ -9,33 +9,29 @@ class LogService(BaseService):
     def log_request(self, request):
 
         data = {
-            "url": request.get_full_path(),  
-            "headers": str(request.META), 
+            "url": request.get_full_path(),
+            "headers": str(request.META),
             "payload": request.body,
+            "method": request.method,
         }
 
-        if request.method == "GET":
-            data["get"] = str(request.GET)
-        else:
-            data["post"] = str(request.POST)
+        data["params"] = str(request.REQUEST)
 
-        log = self.new(**data)      
+        log = self.new(**data)
         log.save()
 
     def log_shopify_request(self, url, method="get", params=None, response=None):
 
         data = {
             "url": url,
+            "method": method,
         }
 
         if response:
             data["response"] = response
 
         if params:
-            if method == "get":
-                params["get"] = str(params) 
-            else:
-                params["post"] = str(params)
+            data["params"] = str(params)
 
-        log = self.new(**data)      
+        log = self.new(**data)
         log.save()
