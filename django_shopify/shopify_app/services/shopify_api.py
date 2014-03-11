@@ -8,7 +8,7 @@ from django.conf import settings
 
 class APIWrapper(object):
 
-    def __init__(self, shop=None, token=None, api_domain=None, log=False):
+    def __init__(self, shop=None, token=None, api_domain=None, log=True):
 
         if shop is not None:
             token = shop.token
