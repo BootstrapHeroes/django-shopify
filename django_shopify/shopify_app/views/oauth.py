@@ -26,11 +26,14 @@ class LoginView(BaseOauthView):
 
         LogService().log_request(self.request)
 
+        if hasattr(self.request, 'session') and 'shopify' in self.request.session:
+            return self.redirect(getattr(settings, "PREFERENCES_URL", DEFAULTS["PREFERENCES_URL"]))
+
         #If the ${shop}.myshopify.com address is already provided in the URL, just skip to authenticate
         if self.request.REQUEST.get('shop'):
             shop = self.request.REQUEST.get('shop').strip()
             permission_url = shopify.Session.create_permission_url(shop, settings.SHOPIFY_API_SCOPE)
-            
+
             LogService().log_shopify_request(permission_url)
 
             return self.redirect(permission_url)
@@ -51,7 +54,7 @@ class FinalizeView(BaseOauthView):
 
         # Checking if the user has a previous valid session initialized, not need to initialize again
         if hasattr(self.request, 'session') and 'shopify' in self.request.session and self.request.session["shopify"]["shop_url"] == shop_url:
-            return self.redirect("/shop")
+            return self.redirect(getattr(settings, "PREFERENCES_URL", DEFAULTS["PREFERENCES_URL"]))
 
         # Initializing shopify session
         try:

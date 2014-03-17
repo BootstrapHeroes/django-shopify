@@ -3,7 +3,7 @@ import os
 from setuptools import setup, find_packages
 
 #from djangp_shopify import __version__
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 __dir__ = os.path.dirname(os.path.abspath(__file__))
 templates_dir = os.path.join(__dir__, "shopify_app", "management", "commands", "templates")
