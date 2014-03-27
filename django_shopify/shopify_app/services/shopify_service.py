@@ -76,10 +76,10 @@ class ShopifyService(object):
 
     def is_active_charge(self, charge_id):
 
-        charge = APIWrapper(self.shop).get("application_charges", {"id": charge_id})
+        charge = APIWrapper(self.shop).get("application_charge", charge_id)
         return charge and charge["status"] == "active"
 
     def is_active_recurring_charge(self, charge_id):
 
-        charge = APIWrapper(self.shop).get("recurring_application_charges", {"id": charge_id})
+        charge = APIWrapper(self.shop).get("recurring_application_charge", charge_id)
         return charge and charge["status"] == "active"

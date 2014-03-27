@@ -67,12 +67,16 @@ class APIWrapper(object):
 
     def search(self, entity, filters):
 
+        entity = self._pluralize_entity(entity)
+
         url = "%s/%s/search.json?query=%s" % (self.api_domain, entity, filters)
         response = self._make_request(url, "get", self.params)
 
         return self._return_entity(response, entity)
 
     def find(self, entity, filters):
+
+        entity = self._pluralize_entity(entity)
 
         url = "%s/%s.json?%s" % (self.api_domain, entity, filters)
         response = self._make_request(url, "get", self.params)
@@ -83,14 +87,21 @@ class APIWrapper(object):
         else:
             return response
 
-    def get(self, entity, filters):
+    def get(self, entity, id):
 
-        entities = self.find(entity, filters)
+        if isinstance(id, dict):
+            id = id.get("id")
 
-        if isinstance(entities, list) and entities:
-            return entities[0]
+        pluralized_entity = self._pluralize_entity(entity)
+
+        url = "%s/%s/%s.json" % (self.api_domain, pluralized_entity, id)
+        response = self._make_request(url, "get", self.params)
+
+        return self._return_entity(response, entity)
 
     def activate_charge(self, entity, charge_id):
+
+        entity = self._pluralize_entity(entity)
 
         url = "%s/%s/%s/activate.json" % (self.api_domain, entity, charge_id)
         response = self._make_request(url, "post", self.params)

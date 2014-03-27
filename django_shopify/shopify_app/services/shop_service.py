@@ -104,7 +104,7 @@ class ShopService(BaseService):
 
     def find_app_charge(self, entity, shop_model, charge_id):
 
-        return APIWrapper(shop_model, log=True).get(entity, {"id": charge_id})
+        return APIWrapper(shop_model, log=True).get(entity, charge_id)
 
     def activate_charge(self, entity, shop_model, charge_id):
 
@@ -118,7 +118,7 @@ class ShopService(BaseService):
         shop_model = self.get(id=shop_id)
         plan_config = PlanConfigService().get(id=plan_config_id)
 
-        api_object = "application_charges" if plan_config.billing_type == "O" else "recurring_application_charges"
+        api_object = "application_charge" if plan_config.billing_type == "O" else "recurring_application_charge"
         charge = self.find_app_charge(api_object, shop_model, charge_id)
 
         if charge["status"] == "accepted":
