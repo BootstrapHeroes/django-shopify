@@ -16,7 +16,7 @@ class PlanConfigService(BaseService):
         """
         data = {
             "name": plan_config.name if plan_config.name else "Default",
-            "price": str(plan_config.billing_amount) if plan_config.billing_amount else "10.0",
+            "price": plan_config.billing_amount if plan_config.billing_amount else 10.0,
             "return_url": "http:%s/shop/billing/?shop=%s&plan_config=%s" % (getattr(settings, "HOST", DEFAULTS["HOST"]), shop.id, plan_config.id),
         }
 
