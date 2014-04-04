@@ -3,7 +3,7 @@ import os
 from setuptools import setup, find_packages
 
 #from djangp_shopify import __version__
-__version__ = "0.1.4"
+__version__ = "0.2.0"
 
 __dir__ = os.path.dirname(os.path.abspath(__file__))
 templates_dir = os.path.join(__dir__, "shopify_app", "management", "commands", "templates")
@@ -30,7 +30,6 @@ setup(
     install_requires=[
         "simplejson",
         "django_conventions",
-        "ShopifyApi==1.0.7",
         "requests",
     ],
     scripts=['bin/start_shopify_app'],
