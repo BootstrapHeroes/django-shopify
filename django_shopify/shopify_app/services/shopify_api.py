@@ -1,3 +1,5 @@
+from urllib import urlencode
+
 import requests
 import simplejson as json
 
@@ -8,7 +10,7 @@ from django.conf import settings
 
 class APIWrapper(object):
 
-    def __init__(self, shop=None, token=None, api_domain=None, log=True):
+    def __init__(self, shop=None, token=None, api_domain=None, shop_url=None, log=True):
 
         if shop is not None:
             token = shop.token
@@ -16,6 +18,7 @@ class APIWrapper(object):
 
         self.api_domain = "https://%s/admin" % api_domain
         self.log = log
+        self.shop_url = shop_url
 
         self.params = {
             "headers": {
@@ -107,6 +110,43 @@ class APIWrapper(object):
         response = self._make_request(url, "post", self.params)
 
         return self._decode_response(response)
+
+    def _normalize_shop_url(self):
+
+        url = self.shop_url
+
+        if not self.shop_url.startswith("http://") and not self.shop_url.startswith("https://"):
+            url = "https://%s" % self.shop_url
+
+        return url
+
+    def permanent_token(self, code):
+
+        shop_url = self._normalize_shop_url()
+        url = "%s/admin/oauth/access_token" % (shop_url, )
+
+        params = self.params.copy()
+        params["params"] = {
+            "code": code,
+            "client_id": settings.SHOPIFY_API_KEY,
+            "client_secret": settings.SHOPIFY_API_SECRET,
+        }
+
+        response = self._make_request(url, "post", params)
+        decoded_response = self._decode_response(response)
+
+        return decoded_response["access_token"]
+
+    def permissions_url(self):
+
+        shop_url = self._normalize_shop_url()
+
+        params = {
+            "scope": ",".join(settings.SHOPIFY_API_SCOPE),
+            "client_id": settings.SHOPIFY_API_KEY,
+        }
+
+        return "%s/admin/oauth/authorize?%s" % (shop_url, urlencode(params))
 
     def current_shop(self):
 

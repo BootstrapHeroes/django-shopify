@@ -3,8 +3,7 @@ from shopify_app.config import DEFAULTS
 from django.conf import settings
 
 from shopify_app.services.log_service import LogService
-
-import shopify
+from shopify_app.services.shopify_api import APIWrapper
 
 
 class BaseOauthView(BaseView):
@@ -32,7 +31,7 @@ class LoginView(BaseOauthView):
         #If the ${shop}.myshopify.com address is already provided in the URL, just skip to authenticate
         if self.request.REQUEST.get('shop'):
             shop = self.request.REQUEST.get('shop').strip()
-            permission_url = shopify.Session.create_permission_url(shop, settings.SHOPIFY_API_SCOPE)
+            permission_url = APIWrapper(shop_url=shop).permissions_url()
 
             LogService().log_shopify_request(permission_url)
 
@@ -58,8 +57,7 @@ class FinalizeView(BaseOauthView):
 
         # Initializing shopify session
         try:
-            shopify_session = shopify.Session(shop_url)
-            shopify_session.request_token(self.request.GET["code"])
+            permanent_token = APIWrapper(shop_url=shop_url).permanent_token(self.request.GET["code"])
         except:
             #Shopify session fails, self.redirect to login initial step
             return self.redirect("%s?shop=%s" % ("/oauth/login", shop_url))
@@ -67,7 +65,7 @@ class FinalizeView(BaseOauthView):
         # Store shopify sesssion data in our session
         self.request.session['shopify'] = {
             "shop_url": shop_url,
-            "access_token": shopify_session.token,
+            "access_token": permanent_token,
         }
 
         return self.redirect(self._return_address(self.request))
