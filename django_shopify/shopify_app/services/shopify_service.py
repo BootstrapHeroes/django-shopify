@@ -1,4 +1,7 @@
-import shopify
+try
+    import shopify
+except ImportError:
+    pass
 
 from django.conf import settings
 
@@ -7,6 +10,10 @@ from shopify_app.utils.python import normalize_url
 
 
 class ShopifyService(object):
+    """
+        @Deprecated. Please use services.shopify_api.APIWrapper to make
+        requests to the shopify api.
+    """
 
     #Set to True to force public app
     public_app = False

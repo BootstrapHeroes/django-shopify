@@ -145,3 +145,13 @@ class RequestLog(BaseEntity):
     params = models.TextField(null=True, blank=True)
 
     response = models.TextField(null=True, blank=True)
+
+
+class ErrorLog(models.Model):
+
+    page_url = models.CharField(max_length=4000)
+    params = models.CharField(max_length=4000)
+    headers = models.CharField(max_length=4000)
+    stack_trace = models.TextField()
+
+    datetime = models.DateTimeField(default=None, null=True, blank=True)

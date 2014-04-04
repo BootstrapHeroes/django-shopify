@@ -1,5 +1,8 @@
+import sys
+from django.views.debug import ExceptionReporter
+
 from base import BaseService
-from shopify_app.models import RequestLog
+from shopify_app.models import RequestLog, ErrorLog
 
 
 class LogService(BaseService):
@@ -35,3 +38,23 @@ class LogService(BaseService):
 
         log = self.new(**data)
         log.save()
+
+    def log_error(self, request):
+
+        etype, evalue, etraceback = sys.exc_info()
+        sys.exc_clear()
+
+        stack_trace = ExceptionReporter(request, etype, evalue, etraceback).get_traceback_text()
+
+        data = {
+            "page_url": request.get_full_path(),
+            "params": str(request.REQUEST),
+            "headers": str(request.META),
+            "stack_trace": stack_trace,
+            "datetime": datetime.now(),
+        }
+
+        log = ErrorLog(**data)
+        log.save()
+
+        return log
