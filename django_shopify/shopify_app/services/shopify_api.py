@@ -16,7 +16,14 @@ class APIWrapper(object):
             token = shop.token
             api_domain = shop.myshopify_domain
 
-        self.api_domain = "https://%s/admin" % api_domain
+        if shop_url is not None:
+            shop_url = self._normalize_shop_url(shop_url)
+
+        if not api_domain:
+            self.api_domain = "%s/admin" % (shop_url, )
+        else:
+            self.api_domain = "https://%s/admin" % api_domain
+
         self.log = log
         self.shop_url = shop_url
 
@@ -111,19 +118,16 @@ class APIWrapper(object):
 
         return self._decode_response(response)
 
-    def _normalize_shop_url(self):
+    def _normalize_shop_url(self, shop_url):
 
-        url = self.shop_url
+        if not shop_url.startswith("http://") and not shop_url.startswith("https://"):
+            shop_url = "https://%s" % shop_url
 
-        if not self.shop_url.startswith("http://") and not self.shop_url.startswith("https://"):
-            url = "https://%s" % self.shop_url
-
-        return url
+        return shop_url
 
     def permanent_token(self, code):
 
-        shop_url = self._normalize_shop_url()
-        url = "%s/admin/oauth/access_token" % (shop_url, )
+        url = "%s/oauth/access_token" % (self.api_domain, )
 
         params = self.params.copy()
         params["params"] = {
@@ -139,14 +143,12 @@ class APIWrapper(object):
 
     def permissions_url(self):
 
-        shop_url = self._normalize_shop_url()
-
         params = {
             "scope": ",".join(settings.SHOPIFY_API_SCOPE),
             "client_id": settings.SHOPIFY_API_KEY,
         }
 
-        return "%s/admin/oauth/authorize?%s" % (shop_url, urlencode(params))
+        return "%s/oauth/authorize?%s" % (self.api_domain, urlencode(params))
 
     def current_shop(self):
 
