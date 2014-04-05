@@ -1,4 +1,4 @@
-try
+try:
     import shopify
 except ImportError:
     pass
