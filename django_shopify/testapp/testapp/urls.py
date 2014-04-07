@@ -17,3 +17,5 @@ urlpatterns = patterns('',
 )
 
 UrlsManager(urlpatterns, testapp_app_root)
+
+handler500 = 'shopify_app.views.error.handler500'
