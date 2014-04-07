@@ -1,7 +1,7 @@
 # Django setting for testapp_app.
 import os
 
-DEBUG = False
+DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
