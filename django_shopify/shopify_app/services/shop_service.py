@@ -31,6 +31,13 @@ class ShopService(BaseService):
         shop = APIWrapper(token=token, api_domain=domain, log=True).current_shop()
         shop_model, created = self.get_or_create(shop_id=shop["id"])
 
+        if not self._check_active_plan(shop_model):
+            redirect_url = self.get_upgrade_plan_url(shop_model)
+
+            LogService().log_shopify_request(redirect_url)
+
+            return shop_model, redirect_url
+
         for field in shop_model.update_fields():
             setattr(shop_model, field, shop.get(field))
 
@@ -40,15 +47,9 @@ class ShopService(BaseService):
 
         shop_model.save()
 
-        redirect_url = False
-        if not self._check_active_plan(shop_model):
-            redirect_url = self.get_upgrade_plan_url(shop_model)
-
-            LogService().log_shopify_request(redirect_url)
-
         self.post_install(request)
 
-        return shop_model, redirect_url
+        return shop_model, False
 
     def _check_active_plan(self, shop):
         """
