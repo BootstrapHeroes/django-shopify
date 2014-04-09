@@ -77,6 +77,9 @@ class APIWrapper(object):
 
     def search(self, entity, filters):
 
+        if isinstance(filters, dict):
+            filters = urlencode(filters)
+
         entity = self._pluralize_entity(entity)
 
         url = "%s/%s/search.json?query=%s" % (self.api_domain, entity, filters)
@@ -85,6 +88,9 @@ class APIWrapper(object):
         return self._return_entity(response, entity)
 
     def find(self, entity, filters):
+
+        if isinstance(filters, dict):
+            filters = urlencode(filters)
 
         entity = self._pluralize_entity(entity)
 
