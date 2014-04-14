@@ -44,6 +44,8 @@ class APIWrapper(object):
         if "errors" in response_json:
             raise Exception(response_json["errors"])
 
+        return response_json
+
     def _make_request(self, url, method, params):
 
         response = getattr(requests, method)(url, **params)
