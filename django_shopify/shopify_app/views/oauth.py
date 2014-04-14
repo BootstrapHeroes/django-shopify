@@ -7,17 +7,7 @@ from shopify_app.services.shopify_api import APIWrapper
 from shopify_app.services.shop_service import ShopService
 
 
-class BaseOauthView(BaseView):
-    """
-        Base class of Aouth Flow Views. Provides common methods
-    """
-
-    def _return_address(self, request):
-
-        return getattr(settings, "PREFERENCES_URL", DEFAULTS["PREFERENCES_URL"])
-
-
-class LoginView(BaseOauthView):
+class LoginView(BaseView):
     """
         Initial login action which ask user for their ${shop}.myshopify.com address and self.redirect user to shopify auth page
     """
@@ -42,7 +32,7 @@ class LoginView(BaseOauthView):
         return super(BaseOauthView, self).get(*args, **kwargs)
 
 
-class FinalizeView(BaseOauthView):
+class FinalizeView(BaseView):
     """
         Finalize login action which receives the request from shopify and login the user to our app.
     """
@@ -52,11 +42,6 @@ class FinalizeView(BaseOauthView):
         LogService().log_request(self.request)
 
         shop_url = self.request.REQUEST.get('shop')
-
-        # Checking if the user has a previous valid session initialized, not need to initialize again
-        if hasattr(self.request, 'session') and 'shopify' in self.request.session and self.request.session["shopify"]["shop_url"] == shop_url:
-            return self.redirect(getattr(settings, "PREFERENCES_URL", DEFAULTS["PREFERENCES_URL"]))
-
         shop = ShopService().get_one(myshopify_domain=shop_url)
 
         if shop is None:
@@ -75,4 +60,4 @@ class FinalizeView(BaseOauthView):
             "access_token": permanent_token,
         }
 
-        return self.redirect(self._return_address(self.request))
+        return self.redirect(getattr(settings, "PREFERENCES_URL", DEFAULTS["PREFERENCES_URL"]))
