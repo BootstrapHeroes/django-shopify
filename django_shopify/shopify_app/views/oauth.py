@@ -29,7 +29,7 @@ class LoginView(BaseView):
 
             return self.redirect(permission_url)
 
-        return super(BaseOauthView, self).get(*args, **kwargs)
+        return super(BaseView, self).get(*args, **kwargs)
 
 
 class FinalizeView(BaseView):
