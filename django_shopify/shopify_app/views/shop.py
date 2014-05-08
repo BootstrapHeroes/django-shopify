@@ -2,6 +2,7 @@ from base import BaseView
 from django.conf import settings
 from shopify_app.config import DEFAULTS
 
+from shopify_app.utils.importer import import_shop_service
 from shopify_app.decorators import shop_login_required
 from shopify_app.services.shop_service import ShopService
 from shopify_app.services.log_service import LogService
@@ -9,7 +10,7 @@ from shopify_app.services.log_service import LogService
 
 class BaseShopView(BaseView):
 
-    service = ShopService()
+    service = import_shop_service()
 
 
 class IndexView(BaseShopView):

@@ -2,6 +2,7 @@ from base import BaseView
 from shopify_app.config import DEFAULTS
 from django.conf import settings
 
+from shopify_app.utils.importer import import_shop_service
 from shopify_app.services.log_service import LogService
 from shopify_app.services.shopify_api import APIWrapper
 from shopify_app.services.shop_service import ShopService
@@ -37,12 +38,14 @@ class FinalizeView(BaseView):
         Finalize login action which receives the request from shopify and login the user to our app.
     """
 
+    service = import_shop_service()
+
     def get(self, *args, **kwargs):
 
         LogService().log_request(self.request)
 
         shop_url = self.request.REQUEST.get('shop')
-        shop = ShopService().get_one(myshopify_domain=shop_url)
+        shop = self.service.get_shop_by_myshopify_domain(shop_url)
 
         if shop is None:
             #If shop doesn't exists get the permanent token using the API
@@ -52,7 +55,7 @@ class FinalizeView(BaseView):
                 #Shopify session fails, self.redirect to login initial step
                 return self.redirect("%s?shop=%s" % ("/oauth/login", shop_url))
         else:
-            permanent_token = shop.token
+            permanent_token = shop.token if hasattr(shop, "token") else shop.get_token()
 
         # Store shopify sesssion data in our session
         self.request.session['shopify'] = {

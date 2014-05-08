@@ -15,6 +15,10 @@ class ShopService(BaseService):
 
     entity = Shop
 
+    def get_shop_by_myshopify_domain(self, shop_url):
+
+        return self.get_one(myshopify_domain=shop_url)
+
     def install(self, request):
         """
             Installation / app preferences service handler.
