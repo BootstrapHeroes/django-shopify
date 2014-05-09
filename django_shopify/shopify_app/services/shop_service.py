@@ -15,6 +15,10 @@ class ShopService(BaseService):
 
     entity = Shop
 
+    def get_shop_by_myshopify_domain(self, shop_url):
+
+        return self.get_one(myshopify_domain=shop_url)
+
     def install(self, request):
         """
             Installation / app preferences service handler.
@@ -31,13 +35,6 @@ class ShopService(BaseService):
         shop = APIWrapper(token=token, api_domain=domain, log=True).current_shop()
         shop_model, created = self.get_or_create(shop_id=shop["id"])
 
-        if not self._check_active_plan(shop_model):
-            redirect_url = self.get_upgrade_plan_url(shop_model)
-
-            LogService().log_shopify_request(redirect_url)
-
-            return shop_model, redirect_url
-
         for field in shop_model.update_fields():
             setattr(shop_model, field, shop.get(field))
 
@@ -48,6 +45,13 @@ class ShopService(BaseService):
         shop_model.save()
 
         self.post_install(request)
+
+        if not self._check_active_plan(shop_model):
+
+            redirect_url = self.get_upgrade_plan_url(shop_model)
+            LogService().log_shopify_request(redirect_url)
+
+            return shop_model, redirect_url
 
         return shop_model, False
 

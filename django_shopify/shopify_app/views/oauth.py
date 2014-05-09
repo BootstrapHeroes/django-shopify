@@ -2,22 +2,13 @@ from base import BaseView
 from shopify_app.config import DEFAULTS
 from django.conf import settings
 
+from shopify_app.utils.importer import import_shop_service
 from shopify_app.services.log_service import LogService
 from shopify_app.services.shopify_api import APIWrapper
 from shopify_app.services.shop_service import ShopService
 
 
-class BaseOauthView(BaseView):
-    """
-        Base class of Aouth Flow Views. Provides common methods
-    """
-
-    def _return_address(self, request):
-
-        return getattr(settings, "PREFERENCES_URL", DEFAULTS["PREFERENCES_URL"])
-
-
-class LoginView(BaseOauthView):
+class LoginView(BaseView):
     """
         Initial login action which ask user for their ${shop}.myshopify.com address and self.redirect user to shopify auth page
     """
@@ -39,25 +30,22 @@ class LoginView(BaseOauthView):
 
             return self.redirect(permission_url)
 
-        return super(BaseOauthView, self).get(*args, **kwargs)
+        return super(BaseView, self).get(*args, **kwargs)
 
 
-class FinalizeView(BaseOauthView):
+class FinalizeView(BaseView):
     """
         Finalize login action which receives the request from shopify and login the user to our app.
     """
+
+    service = import_shop_service()
 
     def get(self, *args, **kwargs):
 
         LogService().log_request(self.request)
 
         shop_url = self.request.REQUEST.get('shop')
-
-        # Checking if the user has a previous valid session initialized, not need to initialize again
-        if hasattr(self.request, 'session') and 'shopify' in self.request.session and self.request.session["shopify"]["shop_url"] == shop_url:
-            return self.redirect(getattr(settings, "PREFERENCES_URL", DEFAULTS["PREFERENCES_URL"]))
-
-        shop = ShopService().get_one(myshopify_domain=shop_url)
+        shop = self.service.get_shop_by_myshopify_domain(shop_url)
 
         if shop is None:
             #If shop doesn't exists get the permanent token using the API
@@ -67,7 +55,7 @@ class FinalizeView(BaseOauthView):
                 #Shopify session fails, self.redirect to login initial step
                 return self.redirect("%s?shop=%s" % ("/oauth/login", shop_url))
         else:
-            permanent_token = shop.token
+            permanent_token = shop.token if hasattr(shop, "token") else shop.get_token()
 
         # Store shopify sesssion data in our session
         self.request.session['shopify'] = {
@@ -75,4 +63,4 @@ class FinalizeView(BaseOauthView):
             "access_token": permanent_token,
         }
 
-        return self.redirect(self._return_address(self.request))
+        return self.redirect(getattr(settings, "PREFERENCES_URL", DEFAULTS["PREFERENCES_URL"]))

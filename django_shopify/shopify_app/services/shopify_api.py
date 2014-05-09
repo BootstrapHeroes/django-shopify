@@ -37,9 +37,14 @@ class APIWrapper(object):
     def _decode_response(self, response):
 
         try:
-            return json.loads(response.text)
+            response_json = json.loads(response.text)
         except:
             return
+
+        if "errors" in response_json:
+            raise Exception(response_json["errors"])
+
+        return response_json
 
     def _make_request(self, url, method, params):
 
