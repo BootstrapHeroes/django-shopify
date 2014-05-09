@@ -75,6 +75,19 @@ class APIWrapper(object):
 
         return self._return_entity(response, entity)
 
+
+    def update(self, id, entity, data):
+
+        params = self.params.copy()
+        params["data"] = json.dumps({entity: data})
+
+        pluralized_entity = self._pluralize_entity(entity)
+
+        url = "%s/%s/%s.json" % (self.api_domain, pluralized_entity, id)
+        response = self._make_request(url, "put", params)
+
+        return self._return_entity(response, entity)
+
     def search(self, entity, filters):
 
         if isinstance(filters, dict):
