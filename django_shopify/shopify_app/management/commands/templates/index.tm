@@ -8,7 +8,7 @@ class IndexView(BaseView):
 
     def get(self, *args, **kwargs):
 
-        context = {{"PROJECT_VERSION": "0.0.1"}}
+        context = {{}}
 
         try:
             context["shop"] = ShopifyService().Shop.current()
