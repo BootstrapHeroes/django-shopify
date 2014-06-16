@@ -18,10 +18,10 @@ def shop_login_required(func):
                 api_wrapper.current_shop()
             except:
                 request.session.pop("shopify", None)
-                return redirect("/oauth/login")
+                return redirect("/oauth/login/?error=invalid token")
         else:
             request.session['return_to'] = request.get_full_path()
-            return redirect("/oauth/login")
+            return redirect("/oauth/login/?error=must login first")
 
         return func(view, request, *args, **kwargs)
 

@@ -9,4 +9,8 @@
     <input id="shop" name="shop" size="45" type="text" />
     <input name="commit" type="submit" value="Install" />
   </p>
+
+  {{% if error %}}
+  <div>{{{{error}}}}</div>
+  {{% endif %}}
 </form>

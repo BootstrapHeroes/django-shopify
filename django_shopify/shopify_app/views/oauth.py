@@ -30,7 +30,9 @@ class LoginView(BaseView):
 
             return self.redirect(permission_url)
 
-        return super(BaseView, self).get(*args, **kwargs)
+        context = {}
+        context["error"] = self.request.GET.get("error")
+        return self.render_to_response(context)
 
 
 class FinalizeView(BaseView):
@@ -53,7 +55,7 @@ class FinalizeView(BaseView):
                 permanent_token = APIWrapper(shop_url=shop_url).permanent_token(self.request.GET["code"])
             except:
                 #Shopify session fails, self.redirect to login initial step
-                return self.redirect("%s?shop=%s" % ("/oauth/login", shop_url))
+                return self.redirect("%s?shop=%s" % ("/oauth/login/?error=invalid code", shop_url))
         else:
             permanent_token = shop.token if hasattr(shop, "token") else shop.get_token()
 
