@@ -1,6 +1,7 @@
 from django.shortcuts import redirect
 from django.conf import settings
 from shopify_app.services.shopify_api import APIWrapper
+from shopify_app.utils.importer import import_shop_service
 
 
 def shop_login_required(func):
@@ -13,10 +14,13 @@ def shop_login_required(func):
         if hasattr(request, 'session') and 'shopify' in request.session:
 
             #Check if the app was uninstalled
-            try:
-                api_wrapper = APIWrapper(token=request.session["shopify"]["access_token"], shop_url=request.session["shopify"]["shop_url"])
-                api_wrapper.current_shop()
-            except:
+            shop_service = import_shop_service()
+
+            token = request.session["shopify"]["access_token"]
+            shop_url = request.session["shopify"]["shop_url"]
+
+            if not shop_service.is_valid_token(token, shop_url):
+
                 request.session.pop("shopify", None)
                 return redirect("/oauth/login/?error=invalid token")
         else:

@@ -5,7 +5,6 @@ from django.conf import settings
 from shopify_app.utils.importer import import_shop_service
 from shopify_app.services.log_service import LogService
 from shopify_app.services.shopify_api import APIWrapper
-from shopify_app.services.shop_service import ShopService
 
 
 class LoginView(BaseView):
@@ -49,15 +48,14 @@ class FinalizeView(BaseView):
         shop_url = self.request.REQUEST.get('shop')
         shop = self.service.get_shop_by_myshopify_domain(shop_url)
 
-        if shop is None:
-            #If shop doesn't exists get the permanent token using the API
+        permanent_token = self.service.get_token(shop, shop_url)
+        if not permanent_token:
+            #if the token is invalid or there is no token
             try:
                 permanent_token = APIWrapper(shop_url=shop_url).permanent_token(self.request.GET["code"])
             except:
                 #Shopify session fails, self.redirect to login initial step
                 return self.redirect("%s?shop=%s" % ("/oauth/login/?error=invalid code", shop_url))
-        else:
-            permanent_token = shop.token if hasattr(shop, "token") else shop.get_token()
 
         # Store shopify sesssion data in our session
         self.request.session['shopify'] = {

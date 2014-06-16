@@ -19,6 +19,25 @@ class ShopService(BaseService):
 
         return self.get_one(myshopify_domain=shop_url)
 
+    def get_token(self, shop, shop_url):
+
+        if shop is None:
+            return
+
+        token = shop.token if hasattr(shop, "token") else shop.get_token()
+
+        if self.is_valid_token(token, shop_url):
+            return token
+
+    def is_valid_token(self, token, shop_url):
+
+        try:
+            api_wrapper = APIWrapper(token=token, shop_url=shop_url)
+            api_wrapper.current_shop()
+            return True
+        except:
+            return False
+
     def install(self, request):
         """
             Installation / app preferences service handler.
