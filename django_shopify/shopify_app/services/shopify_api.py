@@ -68,14 +68,17 @@ class APIWrapper(object):
         if decoded_response is not None:
             return decoded_response.get(entity)
 
-    def create(self, entity, data):
+    def create(self, entity, data, append_protocol=True):
 
         params = self.params.copy()
         params["data"] = json.dumps({entity: data})
 
-        pluralized_entity = self._pluralize_entity(entity)
+        if append_protocol:
+            pluralized_entity = self._pluralize_entity(entity)
+            url = "%s/%s.json" % (self.api_domain, pluralized_entity)
+        else:
+            url = "%s/%s" % (self.api_domain, entity)
 
-        url = "%s/%s.json" % (self.api_domain, pluralized_entity)
         response = self._make_request(url, "post", params)
 
         return self._return_entity(response, entity)
