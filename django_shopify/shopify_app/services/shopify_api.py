@@ -31,7 +31,6 @@ class APIWrapper(object):
             "headers": {
                 'X-Shopify-Access-Token': token,
                 'Content-type': 'application/json',
-                'Accept': 'application/json',
             }
         }
 
@@ -68,6 +67,15 @@ class APIWrapper(object):
 
         if decoded_response is not None:
             return decoded_response.get(entity)
+
+    def post(self, entity, url, data):
+        params = self.params.copy()
+        params["data"] = json.dumps({entity: data})
+
+        url = "%s/%s.json" % (self.api_domain, url)
+        response = self._make_request(url, "post", params)
+
+        return self._return_entity(response, entity)
 
     def create(self, entity, data, append_protocol=True):
 
