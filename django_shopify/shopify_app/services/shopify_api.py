@@ -31,6 +31,7 @@ class APIWrapper(object):
             "headers": {
                 'X-Shopify-Access-Token': token,
                 'Content-type': 'application/json',
+                'Accept': 'application/json',
             }
         }
 
