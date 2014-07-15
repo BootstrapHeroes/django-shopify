@@ -72,7 +72,7 @@ class APIWrapper(object):
         params = self.params.copy()
         params["data"] = json.dumps({entity: data})
 
-        url = "%s/%s.json" % (self.api_domain, url)
+        url = "%s/%s" % (self.api_domain, url)
         response = self._make_request(url, "post", params)
 
         return self._return_entity(response, entity)
